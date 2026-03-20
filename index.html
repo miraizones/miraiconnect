@@ -1,0 +1,2202 @@
+<!DOCTYPE html>
+<html lang="ja" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ミライコネクト - 外国人支援プラットフォーム</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* ===== 基本リセット ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            line-height: 1.6;
+            color: #333;
+            background-color: #f0f7ff;
+        }
+
+        /* ===== ブルーカラーデザイン ===== */
+        :root {
+            --primary-blue: #1e88e5;
+            --primary-dark: #1565c0;
+            --primary-light: #64b5f6;
+            --secondary-blue: #42a5f5;
+            --accent-blue: #0d47a1;
+            --bg-blue: #e3f2fd;
+            --sidebar-blue: #bbdefb;
+        }
+
+        /* ===== 言語選択バー ===== */
+        .language-bar {
+            background-color: var(--primary-dark);
+            padding: 0.5rem;
+            text-align: right;
+        }
+
+        .lang-btn {
+            padding: 0.2rem 0.5rem;
+            margin-left: 0.5rem;
+            border: 1px solid #fff;
+            background: white;
+            cursor: pointer;
+            border-radius: 3px;
+            color: var(--primary-dark);
+            font-weight: bold;
+        }
+
+        .lang-btn.active {
+            background: var(--primary-blue);
+            color: white;
+            border-color: var(--primary-blue);
+        }
+
+        /* ===== ナビゲーションバー ===== */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, var(--primary-dark), var(--accent-blue));
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links li a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            margin: 0 0.5rem;
+            border-radius: 20px;
+            transition: all 0.3s;
+        }
+
+        .nav-links li a:hover {
+            background-color: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+
+        .profile-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: 2px solid white;
+            transition: transform 0.3s;
+            margin-left: 1rem;
+        }
+
+        .profile-icon:hover {
+            transform: scale(1.1);
+        }
+
+        .profile-icon i {
+            font-size: 1.5rem;
+            color: var(--primary-dark);
+        }
+
+        .mobile-menu-toggle {
+            display: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* ===== ヒーローセクション ===== */
+        .hero {
+            background: linear-gradient(rgba(21, 101, 192, 0.8), rgba(13, 71, 161, 0.9)), url('https://images.unsplash.com/photo-1492571350019-22de08371fd3?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            height: 50vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: white;
+            padding: 0 1rem;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .search-box {
+            display: flex;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 25px 0 0 25px;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        .search-box button {
+            padding: 0.8rem 1.5rem;
+            background-color: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: 0 25px 25px 0;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+
+        .search-box button:hover {
+            background-color: var(--primary-dark);
+        }
+
+        /* ===== カテゴリセクション ===== */
+        .categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            padding: 3rem 2rem;
+        }
+
+        .category-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(30, 136, 229, 0.2);
+            transition: all 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            border: 1px solid var(--primary-light);
+        }
+
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(30, 136, 229, 0.3);
+            border-color: var(--primary-blue);
+        }
+
+        .category-card i {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary-blue);
+        }
+
+        .category-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary-dark);
+        }
+
+        .small-text {
+            font-size: 0.8rem;
+            color: var(--primary-blue);
+            margin-top: 0.3rem;
+        }
+
+        /* ===== 広告セクション ===== */
+        .advertisement {
+            background: linear-gradient(135deg, #fff, var(--bg-blue));
+            color: var(--primary-dark);
+            padding: 2rem;
+            margin: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            border: 1px solid var(--primary-light);
+            box-shadow: 0 4px 15px rgba(30, 136, 229, 0.1);
+        }
+
+        /* ===== メインコンテンツエリア ===== */
+        .main-content-area {
+            display: flex;
+            gap: 2rem;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* ===== サイドバー（フィルター） ===== */
+        .filter-sidebar {
+            flex: 0 0 300px;
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(30, 136, 229, 0.1);
+            border: 1px solid var(--primary-light);
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+
+        .filter-sidebar h3 {
+            color: var(--primary-dark);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary-light);
+        }
+
+        .filter-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .filter-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: var(--primary-dark);
+        }
+
+        .filter-group select,
+        .filter-group input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid var(--primary-light);
+            border-radius: 8px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .filter-group select:focus,
+        .filter-group input:focus {
+            border-color: var(--primary-blue);
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .filter-actions button {
+            flex: 1;
+            padding: 0.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-search {
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        .btn-search:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-reset {
+            background: var(--bg-blue);
+            color: var(--primary-dark);
+        }
+
+        .btn-reset:hover {
+            background: var(--primary-light);
+        }
+
+        /* ===== 投稿一覧エリア ===== */
+        .posts-area {
+            flex: 1;
+        }
+
+        .posts-container {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 4px 15px rgba(30, 136, 229, 0.1);
+            border: 1px solid var(--primary-light);
+        }
+
+        .posts-container h2 {
+            color: var(--primary-dark);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary-light);
+        }
+
+        /* ===== 投稿カード ===== */
+        .post-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 8px rgba(30, 136, 229, 0.1);
+            border: 1px solid var(--primary-light);
+            transition: transform 0.3s;
+            position: relative;
+        }
+
+        .post-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 15px rgba(30, 136, 229, 0.2);
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .post-author-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            color: var(--primary-dark);
+            font-size: 1.5rem;
+        }
+
+        .post-author-info h4 {
+            color: var(--primary-dark);
+            margin-bottom: 0.2rem;
+        }
+
+        .post-time {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .post-card h3 {
+            color: var(--primary-dark);
+            margin-bottom: 0.5rem;
+            font-size: 1.3rem;
+        }
+
+        .post-meta {
+            color: var(--primary-blue);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .post-content {
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
+        .post-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.2rem 0.5rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .badge-job { background-color: var(--primary-blue); color: white; }
+        .badge-help { background-color: #ff6b6b; color: white; }
+        .badge-emergency { background-color: #ff4757; color: white; }
+        .badge-ticket { background-color: #9b59b6; color: white; }
+        .badge-money { background-color: #2ecc71; color: white; }
+        .badge-language { background-color: #1abc9c; color: white; }
+        .badge-translation { background-color: #e67e22; color: white; }
+        .badge-visa { background-color: var(--accent-blue); color: white; }
+        .badge-house { background-color: #ffa502; color: white; }
+
+        /* ===== ソーシャル機能 ===== */
+        .post-actions-social {
+            display: flex;
+            gap: 1.5rem;
+            margin: 1rem 0;
+            padding-top: 1rem;
+            border-top: 1px solid var(--primary-light);
+        }
+
+        .social-action {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            color: #666;
+            transition: color 0.3s;
+        }
+
+        .social-action:hover {
+            color: var(--primary-blue);
+        }
+
+        .social-action i {
+            font-size: 1.2rem;
+        }
+
+        .reaction-buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin: 1rem 0;
+            padding: 0.5rem;
+            background: var(--bg-blue);
+            border-radius: 30px;
+        }
+
+        .reaction-btn {
+            padding: 0.3rem 1rem;
+            border: none;
+            background: white;
+            border-radius: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            transition: all 0.3s;
+            border: 1px solid var(--primary-light);
+        }
+
+        .reaction-btn:hover {
+            background: var(--primary-blue);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .reaction-btn i {
+            font-size: 1rem;
+        }
+
+        .comments-section {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: var(--bg-blue);
+            border-radius: 10px;
+        }
+
+        .comment {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            padding: 0.5rem;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .comment-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            color: var(--primary-dark);
+        }
+
+        .comment-content {
+            flex: 1;
+        }
+
+        .comment-author {
+            font-weight: bold;
+            color: var(--primary-dark);
+            margin-bottom: 0.2rem;
+        }
+
+        .comment-text {
+            font-size: 0.9rem;
+        }
+
+        .comment-mention {
+            color: var(--primary-blue);
+            font-weight: bold;
+        }
+
+        .add-comment {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .add-comment input {
+            flex: 1;
+            padding: 0.5rem;
+            border: 1px solid var(--primary-light);
+            border-radius: 20px;
+            outline: none;
+        }
+
+        .add-comment button {
+            padding: 0.5rem 1rem;
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
+        .sticker-picker {
+            display: none;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.5rem;
+            padding: 0.5rem;
+            background: white;
+            border-radius: 10px;
+            margin-top: 0.5rem;
+            border: 1px solid var(--primary-light);
+        }
+
+        .sticker-picker.active {
+            display: grid;
+        }
+
+        .sticker {
+            font-size: 2rem;
+            text-align: center;
+            cursor: pointer;
+            padding: 0.3rem;
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+
+        .sticker:hover {
+            background: var(--bg-blue);
+        }
+
+        /* ===== 投稿タイプ選択 ===== */
+        .post-type-selection {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            padding: 1rem 0;
+        }
+
+        .post-type-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.2rem;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(30, 136, 229, 0.1);
+            transition: all 0.3s;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .post-type-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--primary-blue);
+            box-shadow: 0 4px 15px rgba(30, 136, 229, 0.2);
+        }
+
+        .post-type-card.selected {
+            border-color: var(--primary-blue);
+            background-color: var(--bg-blue);
+        }
+
+        .post-type-card i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary-blue);
+        }
+
+        /* ===== プロフィールモーダル ===== */
+        .profile-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            z-index: 2000;
+            width: 90%;
+            max-width: 500px;
+            border: 2px solid var(--primary-light);
+        }
+
+        .profile-modal.active {
+            display: block;
+        }
+
+        .profile-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .profile-avatar-large {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 3rem;
+            color: var(--primary-dark);
+            border: 3px solid var(--primary-blue);
+        }
+
+        .profile-info {
+            margin-bottom: 1rem;
+        }
+
+        .profile-info-item {
+            display: flex;
+            margin-bottom: 0.8rem;
+            padding: 0.5rem;
+            background: var(--bg-blue);
+            border-radius: 8px;
+        }
+
+        .profile-info-label {
+            width: 100px;
+            font-weight: bold;
+            color: var(--primary-dark);
+        }
+
+        .profile-info-value {
+            flex: 1;
+            color: #333;
+        }
+
+        .profile-edit-btn {
+            width: 100%;
+            padding: 0.8rem;
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+
+        /* ===== モーダル共通 ===== */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 2rem;
+            border: 2px solid var(--primary-light);
+            width: 90%;
+            max-width: 600px;
+            border-radius: 20px;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(30, 136, 229, 0.3);
+        }
+
+        .close {
+            color: var(--primary-blue);
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .close:hover {
+            color: var(--primary-dark);
+        }
+
+        /* ===== フォーム ===== */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.3rem;
+            font-weight: bold;
+            color: var(--primary-dark);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid var(--primary-light);
+            border-radius: 8px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--primary-blue);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: var(--bg-blue);
+            color: var(--primary-dark);
+            border: 1px solid var(--primary-light);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary-light);
+        }
+
+        .btn-success {
+            background: #2ecc71;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #27ae60;
+        }
+
+        .btn-danger {
+            background: #ff4757;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #ff6b81;
+        }
+
+        /* ===== フッター ===== */
+        footer {
+            background: linear-gradient(135deg, var(--primary-dark), var(--accent-blue));
+            color: white;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-section {
+            margin: 1rem;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 1rem;
+            color: var(--primary-light);
+        }
+
+        .footer-section a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-section a:hover {
+            color: var(--primary-light);
+        }
+
+        /* ===== レスポンシブ ===== */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                padding: 1rem;
+            }
+            
+            .nav-links {
+                margin-top: 1rem;
+                flex-direction: column;
+                align-items: center;
+                display: none;
+                width: 100%;
+            }
+            
+            .nav-links.active {
+                display: flex;
+            }
+            
+            .nav-links li {
+                margin: 0.5rem 0;
+                width: 100%;
+                text-align: center;
+            }
+            
+            .nav-links li a {
+                display: block;
+                margin: 0;
+            }
+            
+            .mobile-menu-toggle {
+                display: block;
+            }
+            
+            .main-content-area {
+                flex-direction: column;
+                padding: 1rem;
+            }
+            
+            .filter-sidebar {
+                position: static;
+                width: 100%;
+            }
+            
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 言語選択バー -->
+    <div class="language-bar">
+        <button class="lang-btn active" data-lang="ja">日本語</button>
+        <button class="lang-btn" data-lang="en">English</button>
+        <button class="lang-btn" data-lang="ne">नेपाली</button>
+    </div>
+
+    <!-- ナビゲーションバー -->
+    <nav class="navbar">
+        <div class="logo">ミライコネクト</div>
+        <ul class="nav-links">
+            <li><a href="#" data-translate="home">ホーム</a></li>
+            <li><a href="#" id="find-jobs-btn" data-translate="jobs">仕事を探す</a></li>
+            <li><a href="#" id="find-tasks-btn" data-translate="tasks">タスクを求める</a></li>
+            <li><a href="#" id="post-link" data-translate="post">投稿する</a></li>
+            <li><a href="#" id="ad-contact-link" data-translate="ad_contact">広告掲載</a></li>
+            <li><a href="#" id="login-link" data-translate="login">ログイン</a></li>
+            <li>
+                <div class="profile-icon" id="profile-icon" style="display: none;">
+                    <i class="fas fa-user"></i>
+                </div>
+            </li>
+        </ul>
+        <div class="mobile-menu-toggle">
+            <i class="fas fa-bars"></i>
+        </div>
+    </nav>
+
+    <!-- プロフィールモーダル -->
+    <div class="profile-modal" id="profile-modal">
+        <span class="close" onclick="document.getElementById('profile-modal').classList.remove('active')">&times;</span>
+        <div class="profile-header">
+            <div class="profile-avatar-large">
+                <i class="fas fa-user"></i>
+            </div>
+            <h2 id="profile-name">ユーザー名</h2>
+        </div>
+        <div class="profile-info">
+            <div class="profile-info-item">
+                <span class="profile-info-label">氏名</span>
+                <span class="profile-info-value" id="profile-fullname">-</span>
+            </div>
+            <div class="profile-info-item">
+                <span class="profile-info-label">生年月日</span>
+                <span class="profile-info-value" id="profile-birthdate">-</span>
+            </div>
+            <div class="profile-info-item">
+                <span class="profile-info-label">メール</span>
+                <span class="profile-info-value" id="profile-email">-</span>
+            </div>
+            <div class="profile-info-item">
+                <span class="profile-info-label">住所</span>
+                <span class="profile-info-value" id="profile-address">-</span>
+            </div>
+        </div>
+        <button class="profile-edit-btn" onclick="alert('編集機能は準備中です')">プロフィール編集</button>
+    </div>
+
+    <!-- メインコンテンツ -->
+    <main>
+        <section class="hero">
+            <h1 data-translate="welcome">外国人と日本社会をつなぐプラットフォーム</h1>
+            <div class="search-box">
+                <input type="text" placeholder="仕事、ヘルプ、地域などで検索" data-translate="search_placeholder" id="global-search">
+                <button data-translate="search" onclick="searchPosts()">検索</button>
+            </div>
+        </section>
+
+        <!-- 広告セクション -->
+        <section class="advertisement">
+            <h2 data-translate="ad_title">サービス広告掲載のお知らせ</h2>
+            <p data-translate="ad_description">以下のサービスについて広告掲載を受け付けております</p>
+            <button class="btn btn-primary" id="ad-contact-btn" style="margin-top: 1.5rem; padding: 0.8rem 1.5rem; font-size: 1.1rem;">
+                <i class="fas fa-envelope"></i> 
+                <span data-translate="ad_contact_us">広告掲載について問い合わせる</span>
+            </button>
+        </section>
+
+        <!-- カテゴリセクション -->
+        <section class="categories">
+            <a href="work.html" class="category-card">
+                <i class="fas fa-calendar-day"></i>
+                <h3 data-translate="short_jobs">短期・単発バイト</h3>
+                <p data-translate="click_to_view">クリックして詳細を見る</p>
+            </a>
+            <a href="language-support.html" class="category-card">
+                <i class="fas fa-language"></i>
+                <h3 data-translate="language_support">語学サポート</h3>
+                <p data-translate="click_to_view">クリックして詳細を見る</p>
+            </a>
+            <a href="language-support.html" class="category-card">
+                <i class="fas fa-comments"></i>
+                <h3 data-translate="translation">翻訳・通訳</h3>
+                <p data-translate="click_to_view">クリックして詳細を見る</p>
+            </a>
+            <a href="booking.html" class="category-card">
+                <i class="fas fa-plane"></i>
+                <h3 data-translate="flight_ticket">飛行機チケット</h3>
+                <p data-translate="click_to_view">クリックして詳細を見る <span class="coming-soon-badge">準備中</span></p>
+            </a>
+            <div class="category-card" onclick="openMoneyTransferModal()">
+                <i class="fas fa-money-bill-wave"></i>
+                <h3 data-translate="money_transfer">海外送金</h3>
+                <p data-translate="click_to_view">クリックして詳細を見る</p>
+            </div>
+            <a href="house.html" class="category-card">
+                <i class="fas fa-home"></i>
+                <h3>お部屋探し</h3>
+                <p class="small-text">シェアハウス</p>
+                <p data-translate="click_to_view">クリックして詳細を見る <span class="coming-soon-badge">準備中</span></p>
+            </a>
+        </section>
+
+        <!-- メインコンテンツエリア（フィルター＋投稿一覧） -->
+        <div class="main-content-area">
+            <!-- フィルターサイドバー -->
+            <div class="filter-sidebar" id="filter-sidebar" style="display: none;">
+                <h3><i class="fas fa-filter"></i> 仕事を絞り込む</h3>
+                <div class="filter-group">
+                    <label for="job-type">仕事の種類</label>
+                    <select id="job-type">
+                        <option value="all">すべて</option>
+                        <option value="short-term">短期・単発バイト</option>
+                        <option value="full-time">社員・契約社員</option>
+                        <option value="dispatch">派遣社員</option>
+                        <option value="remote">在宅・内職</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="job-location">勤務地</label>
+                    <input type="text" id="job-location" placeholder="例: 東京都">
+                </div>
+                <div class="filter-group">
+                    <label for="job-salary-min">最低給与（時給）</label>
+                    <input type="number" id="job-salary-min" placeholder="例: 1000">
+                </div>
+                <div class="filter-group">
+                    <label for="job-salary-max">最高給与（時給）</label>
+                    <input type="number" id="job-salary-max" placeholder="例: 2000">
+                </div>
+                <div class="filter-actions">
+                    <button class="btn-search" onclick="applyJobFilter()"><i class="fas fa-search"></i> 検索</button>
+                    <button class="btn-reset" onclick="resetJobFilter()"><i class="fas fa-undo"></i> リセット</button>
+                </div>
+            </div>
+
+            <!-- 投稿一覧エリア -->
+            <div class="posts-area">
+                <div class="posts-container">
+                    <h2 id="posts-title" data-translate="recent_posts">最近の投稿</h2>
+                    <div id="posts-list"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- ===== モーダル一覧 ===== -->
+
+    <!-- 投稿タイプ選択モーダル -->
+    <div id="post-type-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 data-translate="select_post_type">投稿タイプを選択</h2>
+            <div class="post-type-selection">
+                <div class="post-type-card" data-post-type="job">
+                    <i class="fas fa-briefcase"></i>
+                    <h3 data-translate="job_post">仕事の投稿</h3>
+                </div>
+                <div class="post-type-card" data-post-type="language">
+                    <i class="fas fa-language"></i>
+                    <h3 data-translate="language_support">語学サポート</h3>
+                </div>
+                <div class="post-type-card" data-post-type="translation">
+                    <i class="fas fa-comments"></i>
+                    <h3 data-translate="translation">翻訳・通訳</h3>
+                </div>
+                <div class="post-type-card" data-post-type="visa">
+                    <i class="fas fa-passport"></i>
+                    <h3 data-translate="visa_support">ビザサポート</h3>
+                </div>
+                <div class="post-type-card" data-post-type="money">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <h3 data-translate="money_rate">為替レート</h3>
+                </div>
+                <div class="post-type-card" data-post-type="help">
+                    <i class="fas fa-hands-helping"></i>
+                    <h3 data-translate="help_request">助けを求める</h3>
+                </div>
+                <div class="post-type-card" data-post-type="house">
+                    <i class="fas fa-home"></i>
+                    <h3>お部屋探し</h3>
+                </div>
+                <div class="post-type-card" data-post-type="task">
+                    <i class="fas fa-tasks"></i>
+                    <h3>タスク投稿</h3>
+                </div>
+            </div>
+            <div class="form-navigation" style="text-align: right; margin-top: 1rem;">
+                <button type="button" class="btn btn-secondary" id="cancel-post-type" data-translate="cancel">キャンセル</button>
+                <button type="button" class="btn btn-primary" id="next-to-details" data-translate="next" disabled>次へ</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 投稿詳細入力モーダル -->
+    <div id="post-details-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="post-details-title" data-translate="fill_details">詳細を入力</h2>
+            <form id="post-details-form">
+                <div class="form-group">
+                    <label for="post-title" data-translate="title">タイトル</label>
+                    <input type="text" id="post-title" required>
+                </div>
+                <div class="form-group">
+                    <label for="post-description" data-translate="description">詳細説明</label>
+                    <textarea id="post-description" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="post-location" data-translate="location">場所</label>
+                    <input type="text" id="post-location">
+                </div>
+
+                <!-- 仕事フォーム -->
+                <div id="job-details-form" style="display: none;">
+                    <div class="form-group">
+                        <label for="job-salary" data-translate="salary">給与</label>
+                        <input type="text" id="job-salary" placeholder="例: 時給1,000円">
+                    </div>
+                    <div class="form-group">
+                        <label for="job-hours" data-translate="working_hours">勤務時間</label>
+                        <input type="text" id="job-hours" placeholder="例: 10:00-15:00">
+                    </div>
+                </div>
+
+                <!-- 語学サポートフォーム -->
+                <div id="language-details-form" style="display: none;">
+                    <div class="form-group">
+                        <label for="learn-language">言語</label>
+                        <input type="text" id="learn-language">
+                    </div>
+                </div>
+
+                <!-- 翻訳・通訳フォーム -->
+                <div id="translation-details-form" style="display: none;">
+                    <div class="form-group">
+                        <label for="translation-languages">言語ペア</label>
+                        <input type="text" id="translation-languages">
+                    </div>
+                </div>
+
+                <!-- ビザサポートフォーム -->
+                <div id="visa-details-form" style="display: none;">
+                    <div class="form-group">
+                        <label for="visa-type">ビザの種類</label>
+                        <input type="text" id="visa-type">
+                    </div>
+                </div>
+
+                <!-- 為替レートフォーム -->
+                <div id="money-details-form" style="display: none;">
+                    <div class="form-group">
+                        <label for="company-name">会社名</label>
+                        <input type="text" id="company-name">
+                    </div>
+                </div>
+
+                <!-- お部屋探しフォーム -->
+                <div id="house-details-form" style="display: none;">
+                    <div class="form-group">
+                        <label for="house-rent">家賃</label>
+                        <input type="text" id="house-rent" placeholder="例: 50,000円">
+                    </div>
+                    <div class="form-group">
+                        <label for="house-type">物件種別</label>
+                        <select id="house-type">
+                            <option value="apartment">アパート</option>
+                            <option value="mansion">マンション</option>
+                            <option value="sharehouse">シェアハウス</option>
+                            <option value="guesthouse">ゲストハウス</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="house-size">広さ</label>
+                        <input type="text" id="house-size" placeholder="例: 1K, 25㎡">
+                    </div>
+                </div>
+
+                <!-- タスク投稿フォーム -->
+                <div id="task-details-form" style="display: none;">
+                    <div class="form-group">
+                        <label for="task-type">タスク種類</label>
+                        <select id="task-type">
+                            <option value="job">仕事探し</option>
+                            <option value="visa">ビザ申請/問題</option>
+                            <option value="car">車購入</option>
+                            <option value="move">引っ越し</option>
+                            <option value="other">その他</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancel-post">キャンセル</button>
+                    <button type="submit" class="btn btn-primary" data-translate="submit_post">投稿する</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ログインモーダル -->
+    <div id="login-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>ログイン / 新規登録</h2>
+            <div class="tab-buttons" style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                <button class="tab-btn active" onclick="showLoginTab('login')">ログイン</button>
+                <button class="tab-btn" onclick="showLoginTab('register')">新規登録</button>
+            </div>
+            
+            <!-- ログインフォーム -->
+            <div id="login-tab" class="tab-content active">
+                <form id="login-form">
+                    <div class="form-group">
+                        <label>メールアドレス</label>
+                        <input type="email" id="login-email" required>
+                    </div>
+                    <div class="form-group">
+                        <label>パスワード</label>
+                        <input type="password" id="login-password" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeLoginModal()">キャンセル</button>
+                        <button type="submit" class="btn btn-primary">ログイン</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- 新規登録フォーム -->
+            <div id="register-tab" class="tab-content">
+                <form id="register-form">
+                    <div class="form-group">
+                        <label>氏名</label>
+                        <input type="text" id="register-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>生年月日</label>
+                        <input type="date" id="register-birthdate" required>
+                    </div>
+                    <div class="form-group">
+                        <label>メールアドレス</label>
+                        <input type="email" id="register-email" required>
+                    </div>
+                    <div class="form-group">
+                        <label>住所</label>
+                        <input type="text" id="register-address" required>
+                    </div>
+                    <div class="form-group">
+                        <label>パスワード</label>
+                        <input type="password" id="register-password" required>
+                    </div>
+                    <div class="form-group">
+                        <label>パスワード（確認）</label>
+                        <input type="password" id="register-password-confirm" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeLoginModal()">キャンセル</button>
+                        <button type="submit" class="btn btn-success">登録</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 海外送金モーダル -->
+    <div id="money-transfer-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeMoneyTransferModal()">&times;</span>
+            <h2><i class="fas fa-money-bill-wave"></i> 海外送金</h2>
+            
+            <!-- ステップ1: 送金情報入力 -->
+            <div class="step-card">
+                <div class="step-header">
+                    <div class="step-number-circle">1</div>
+                    <h4>送金情報入力</h4>
+                </div>
+                <div class="form-group">
+                    <label>送金額（日本円）</label>
+                    <input type="number" id="send-amount" min="1">
+                </div>
+                <div class="form-group">
+                    <label>送金先国</label>
+                    <select id="send-country">
+                        <option value="npr">ネパール</option>
+                        <option value="vnd">ベトナム</option>
+                        <option value="bdt">バングラデシュ</option>
+                        <option value="php">フィリピン</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>適用レート</label>
+                    <input type="number" id="exchange-rate" step="0.0001" readonly>
+                </div>
+                <button type="button" class="btn btn-primary" id="calculate-transfer">計算する</button>
+                <div class="calculator-result" id="transfer-result" style="display: none;">
+                    <p id="result-text"></p>
+                </div>
+            </div>
+
+            <!-- ステップ2: 受取人情報入力 -->
+            <div class="step-card">
+                <div class="step-header">
+                    <div class="step-number-circle">2</div>
+                    <h4>受取人情報入力</h4>
+                </div>
+                <div class="form-group">
+                    <label>受取人名</label>
+                    <input type="text" id="recipient-name">
+                </div>
+                <div class="form-group">
+                    <label>受取人電話番号</label>
+                    <input type="tel" id="recipient-phone">
+                </div>
+                <div class="form-group">
+                    <label>銀行口座</label>
+                    <input type="text" id="recipient-bank">
+                </div>
+            </div>
+
+            <!-- ステップ3: 内容確認 -->
+            <div class="step-card">
+                <div class="step-header">
+                    <div class="step-number-circle">3</div>
+                    <h4>内容確認</h4>
+                </div>
+                <div class="transfer-summary-box" id="transfer-summary">
+                    <p><strong>送金額:</strong> <span id="summary-amount">-</span> 円</p>
+                    <p><strong>受取人名:</strong> <span id="summary-name">-</span></p>
+                    <p><strong>銀行口座:</strong> <span id="summary-bank">-</span></p>
+                </div>
+                <button type="button" class="btn btn-primary" id="confirm-transfer">内容確認</button>
+                <button type="button" class="btn btn-success" id="final-transfer" style="display: none;" onclick="sendMoney()">送金を確定する</button>
+            </div>
+
+            <div class="form-navigation" style="margin-top: 2rem;">
+                <button type="button" class="btn btn-secondary" onclick="closeMoneyTransferModal()">キャンセル</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 広告問い合わせモーダル -->
+    <div id="ad-contact-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>広告掲載についての問い合わせ</h2>
+            <form id="ad-contact-form">
+                <div class="form-group">
+                    <label>お名前</label>
+                    <input type="text" id="ad-contact-name" required>
+                </div>
+                <div class="form-group">
+                    <label>メールアドレス</label>
+                    <input type="email" id="ad-contact-email" required>
+                </div>
+                <div class="form-group">
+                    <label>電話番号</label>
+                    <input type="tel" id="ad-contact-phone">
+                </div>
+                <div class="form-group">
+                    <label>会社名</label>
+                    <input type="text" id="ad-contact-company">
+                </div>
+                <div class="form-group">
+                    <label>メッセージ</label>
+                    <textarea id="ad-contact-message" rows="5"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancel-ad-contact">キャンセル</button>
+                    <button type="submit" class="btn btn-primary">問い合わせを送信</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- フッター -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3 data-translate="about">会社情報</h3>
+                <p>株式会社ミライゾーン</p>
+                <p>埼玉県入間市下藤沢</p>
+            </div>
+            <div class="footer-section">
+                <h3 data-translate="contact">お問い合わせ</h3>
+                <p>Email: info@miraizone.co.jp</p>
+                <p>Tel: 0120-XXX-XXX</p>
+            </div>
+            <div class="footer-section">
+                <h3 data-translate="links">リンク</h3>
+                <p><a href="#" data-translate="terms">利用規約</a></p>
+                <p><a href="#" data-translate="privacy">プライバシーポリシー</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // ===== 翻訳データ =====
+        const translations = {
+            ja: {
+                home: "ホーム",
+                jobs: "仕事を探す",
+                tasks: "タスクを求める",
+                post: "投稿する",
+                login: "ログイン",
+                ad_contact: "広告掲載",
+                welcome: "外国人と日本社会をつなぐプラットフォーム",
+                search: "検索",
+                search_placeholder: "仕事、ヘルプ、地域などで検索",
+                short_jobs: "短期・単発バイト",
+                language_support: "語学サポート",
+                translation: "翻訳・通訳",
+                visa_support: "ビザサポート",
+                flight_ticket: "飛行機チケット",
+                money_transfer: "海外送金",
+                about: "会社情報",
+                contact: "お問い合わせ",
+                recent_posts: "最近の投稿",
+                no_posts: "該当する投稿はありません",
+                click_to_view: "クリックして詳細を見る",
+                cancel: "キャンセル",
+                next: "次へ",
+                submit_post: "投稿する",
+                title: "タイトル",
+                description: "詳細説明",
+                location: "場所",
+                ad_title: "サービス広告掲載のお知らせ",
+                ad_description: "以下のサービスについて広告掲載を受け付けております",
+                ad_contact_us: "広告掲載について問い合わせる",
+                select_post_type: "投稿タイプを選択",
+                job_post: "仕事の投稿",
+                fill_details: "詳細を入力"
+            },
+            en: {
+                home: "Home",
+                jobs: "Find Jobs",
+                tasks: "Find Tasks",
+                post: "Post",
+                login: "Login",
+                ad_contact: "Ad Placement",
+                welcome: "Connecting Foreigners and Japanese Society",
+                search: "Search",
+                search_placeholder: "Search for jobs, help, area etc.",
+                short_jobs: "Short-term Jobs",
+                language_support: "Language Support",
+                translation: "Translation",
+                visa_support: "Visa Support",
+                flight_ticket: "Flight Tickets",
+                money_transfer: "Money Transfer",
+                about: "About",
+                contact: "Contact",
+                recent_posts: "Recent Posts",
+                no_posts: "No posts found",
+                click_to_view: "Click to view",
+                cancel: "Cancel",
+                next: "Next",
+                submit_post: "Submit",
+                title: "Title",
+                description: "Description",
+                location: "Location",
+                ad_title: "Advertisement",
+                ad_description: "We accept advertisements",
+                ad_contact_us: "Contact us",
+                select_post_type: "Select Post Type",
+                job_post: "Job Post",
+                fill_details: "Fill Details"
+            }
+        };
+
+        // ===== 為替レート =====
+        const exchangeRates = {
+            npr: 1.25,
+            vnd: 160,
+            bdt: 0.70,
+            php: 0.40
+        };
+
+        // ===== ユーザーデータ =====
+        let users = JSON.parse(localStorage.getItem('users')) || [];
+        let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
+
+        // ===== 投稿データ =====
+        let posts = JSON.parse(localStorage.getItem('posts')) || [
+            {
+                id: 1,
+                type: 'job',
+                category: 'short-term',
+                title: 'レストランのキッチンスタッフ募集',
+                description: '週2日からOK！日本語が話せなくても大丈夫です。',
+                location: '東京都新宿区',
+                salary: '時給1,100円',
+                author: 'レストラン田中',
+                authorId: 1,
+                date: new Date().toISOString(),
+                reactions: { like: 5, love: 2, helpful: 3 },
+                comments: [
+                    { author: '田中さん', text: '初心者でも大丈夫ですか？', mentions: [] }
+                ]
+            },
+            {
+                id: 2,
+                type: 'task',
+                category: 'visa',
+                title: 'ビザ申請について相談したい',
+                description: '技術・人文知識・国際業務ビザの更新について',
+                location: 'オンライン',
+                author: '佐藤さん',
+                authorId: 2,
+                date: new Date().toISOString(),
+                reactions: { like: 3, helpful: 5 },
+                comments: []
+            },
+            {
+                id: 3,
+                type: 'house',
+                category: 'sharehouse',
+                title: 'シェアハウスのルームメイト募集',
+                description: '月4万円、光熱費込み。国際交流したい方大歓迎！',
+                location: '東京都杉並区',
+                rent: '40,000円',
+                houseType: 'sharehouse',
+                author: 'マイケル',
+                authorId: 3,
+                date: new Date().toISOString(),
+                reactions: { like: 2 },
+                comments: []
+            }
+        ];
+
+        // ===== コメント、リアクションデータ =====
+        let comments = JSON.parse(localStorage.getItem('comments')) || [];
+        let reactions = JSON.parse(localStorage.getItem('reactions')) || {};
+
+        // ===== 現在の表示モード =====
+        let currentMode = 'home'; // 'home', 'jobs', 'tasks'
+
+        // ===== 言語切り替え =====
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const lang = this.dataset.lang;
+                changeLanguage(lang);
+                document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        function changeLanguage(lang) {
+            document.querySelectorAll('[data-translate]').forEach(el => {
+                const key = el.dataset.translate;
+                if (translations[lang] && translations[lang][key]) {
+                    el.textContent = translations[lang][key];
+                }
+            });
+        }
+
+        // ===== プロフィール表示 =====
+        function updateProfileUI() {
+            const profileIcon = document.getElementById('profile-icon');
+            const loginLink = document.getElementById('login-link');
+            
+            if (currentUser) {
+                profileIcon.style.display = 'flex';
+                loginLink.style.display = 'none';
+                document.getElementById('profile-name').textContent = currentUser.name;
+                document.getElementById('profile-fullname').textContent = currentUser.name;
+                document.getElementById('profile-birthdate').textContent = currentUser.birthdate;
+                document.getElementById('profile-email').textContent = currentUser.email;
+                document.getElementById('profile-address').textContent = currentUser.address;
+            } else {
+                profileIcon.style.display = 'none';
+                loginLink.style.display = 'block';
+            }
+        }
+
+        document.getElementById('profile-icon').addEventListener('click', function() {
+            document.getElementById('profile-modal').classList.add('active');
+        });
+
+        // ===== ログイン/登録機能 =====
+        document.getElementById('login-link').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('login-modal').style.display = 'block';
+        });
+
+        window.showLoginTab = function(tab) {
+            document.querySelectorAll('#login-modal .tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('#login-modal .tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tab + '-tab').classList.add('active');
+            event.target.classList.add('active');
+        };
+
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            const user = users.find(u => u.email === email && u.password === password);
+            
+            if (user) {
+                currentUser = user;
+                localStorage.setItem('currentUser', JSON.stringify(user));
+                alert('ログイン成功！');
+                closeLoginModal();
+                updateProfileUI();
+            } else {
+                alert('メールアドレスまたはパスワードが間違っています');
+            }
+        });
+
+        document.getElementById('register-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('register-name').value;
+            const birthdate = document.getElementById('register-birthdate').value;
+            const email = document.getElementById('register-email').value;
+            const address = document.getElementById('register-address').value;
+            const password = document.getElementById('register-password').value;
+            const passwordConfirm = document.getElementById('register-password-confirm').value;
+            
+            if (password !== passwordConfirm) {
+                alert('パスワードが一致しません');
+                return;
+            }
+            
+            if (users.some(u => u.email === email)) {
+                alert('このメールアドレスは既に登録されています');
+                return;
+            }
+            
+            const newUser = {
+                id: users.length + 1,
+                name,
+                birthdate,
+                email,
+                address,
+                password
+            };
+            
+            users.push(newUser);
+            localStorage.setItem('users', JSON.stringify(users));
+            
+            currentUser = newUser;
+            localStorage.setItem('currentUser', JSON.stringify(newUser));
+            
+            alert('登録完了！');
+            closeLoginModal();
+            updateProfileUI();
+        });
+
+        window.closeLoginModal = function() {
+            document.getElementById('login-modal').style.display = 'none';
+            document.getElementById('login-form').reset();
+            document.getElementById('register-form').reset();
+        };
+
+        // ===== 仕事を探すフィルター表示 =====
+        document.getElementById('find-jobs-btn').addEventListener('click', function(e) {
+            e.preventDefault();
+            currentMode = 'jobs';
+            document.getElementById('filter-sidebar').style.display = 'block';
+            document.getElementById('posts-title').textContent = '仕事一覧';
+            filterPosts('job');
+        });
+
+        // ===== タスクを求める =====
+        document.getElementById('find-tasks-btn').addEventListener('click', function(e) {
+            e.preventDefault();
+            currentMode = 'tasks';
+            document.getElementById('filter-sidebar').style.display = 'none';
+            document.getElementById('posts-title').textContent = 'タスク一覧';
+            filterPosts('task');
+        });
+
+        // ===== フィルター機能 =====
+        window.applyJobFilter = function() {
+            const type = document.getElementById('job-type').value;
+            const location = document.getElementById('job-location').value;
+            const salaryMin = document.getElementById('job-salary-min').value;
+            const salaryMax = document.getElementById('job-salary-max').value;
+            
+            let filtered = posts.filter(post => post.type === 'job');
+            
+            if (type !== 'all') {
+                filtered = filtered.filter(post => post.category === type);
+            }
+            
+            if (location) {
+                filtered = filtered.filter(post => 
+                    post.location && post.location.includes(location)
+                );
+            }
+            
+            if (salaryMin) {
+                filtered = filtered.filter(post => {
+                    const salary = parseInt(post.salary?.replace(/[^0-9]/g, '')) || 0;
+                    return salary >= parseInt(salaryMin);
+                });
+            }
+            
+            if (salaryMax) {
+                filtered = filtered.filter(post => {
+                    const salary = parseInt(post.salary?.replace(/[^0-9]/g, '')) || 0;
+                    return salary <= parseInt(salaryMax);
+                });
+            }
+            
+            displayPosts(filtered);
+        };
+
+        window.resetJobFilter = function() {
+            document.getElementById('job-type').value = 'all';
+            document.getElementById('job-location').value = '';
+            document.getElementById('job-salary-min').value = '';
+            document.getElementById('job-salary-max').value = '';
+            filterPosts('job');
+        };
+
+        function filterPosts(type) {
+            let filtered = posts.filter(post => post.type === type);
+            displayPosts(filtered);
+        }
+
+        // ===== 投稿表示 =====
+        function displayPosts(postsToShow) {
+            const container = document.getElementById('posts-list');
+            const lang = getCurrentLanguage();
+            
+            if (postsToShow.length === 0) {
+                container.innerHTML = `<p>${translations[lang].no_posts}</p>`;
+                return;
+            }
+            
+            container.innerHTML = postsToShow.map(post => `
+                <div class="post-card" data-post-id="${post.id}">
+                    <div class="post-header">
+                        <div class="post-author-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="post-author-info">
+                            <h4>${post.author}</h4>
+                            <span class="post-time">${new Date(post.date).toLocaleString()}</span>
+                        </div>
+                    </div>
+                    <h3>${post.title}</h3>
+                    <div class="post-meta">
+                        <i class="fas fa-map-marker-alt"></i> ${post.location || '場所未設定'}
+                    </div>
+                    <div class="post-content">
+                        ${post.description}
+                    </div>
+                    <div class="post-tags">
+                        <span class="badge badge-${post.type}">${getPostTypeLabel(post.type)}</span>
+                        ${post.salary ? `<span class="badge badge-job">💰 ${post.salary}</span>` : ''}
+                        ${post.rent ? `<span class="badge badge-house">🏠 ${post.rent}</span>` : ''}
+                    </div>
+                    
+                    <!-- ソーシャル機能 -->
+                    <div class="post-actions-social">
+                        <div class="social-action" onclick="toggleReactions(${post.id})">
+                            <i class="far fa-smile"></i>
+                            <span>リアクション</span>
+                        </div>
+                        <div class="social-action" onclick="toggleComments(${post.id})">
+                            <i class="far fa-comment"></i>
+                            <span>コメント</span>
+                        </div>
+                        <div class="social-action" onclick="openMention(${post.id})">
+                            <i class="far fa-at"></i>
+                            <span>メンション</span>
+                        </div>
+                        <div class="social-action" onclick="openStickers(${post.id})">
+                            <i class="far fa-smile-wink"></i>
+                            <span>ステッカー</span>
+                        </div>
+                    </div>
+
+                    <!-- リアクションエリア -->
+                    <div class="reaction-buttons" id="reactions-${post.id}" style="display: none;">
+                        <button class="reaction-btn" onclick="addReaction(${post.id}, 'like')">
+                            <i class="far fa-thumbs-up"></i> 👍 ${post.reactions?.like || 0}
+                        </button>
+                        <button class="reaction-btn" onclick="addReaction(${post.id}, 'love')">
+                            <i class="far fa-heart"></i> ❤️ ${post.reactions?.love || 0}
+                        </button>
+                        <button class="reaction-btn" onclick="addReaction(${post.id}, 'helpful')">
+                            <i class="far fa-check-circle"></i> 役に立った ${post.reactions?.helpful || 0}
+                        </button>
+                    </div>
+
+                    <!-- コメントエリア -->
+                    <div class="comments-section" id="comments-${post.id}" style="display: none;">
+                        ${renderComments(post.id)}
+                        <div class="add-comment">
+                            <input type="text" id="comment-input-${post.id}" placeholder="コメントを書く... @でメンション">
+                            <button onclick="addComment(${post.id})">投稿</button>
+                        </div>
+                    </div>
+
+                    <!-- ステッカーピッカー -->
+                    <div class="sticker-picker" id="stickers-${post.id}">
+                        <div class="sticker" onclick="addSticker(${post.id}, '😊')">😊</div>
+                        <div class="sticker" onclick="addSticker(${post.id}, '🎉')">🎉</div>
+                        <div class="sticker" onclick="addSticker(${post.id}, '👍')">👍</div>
+                        <div class="sticker" onclick="addSticker(${post.id}, '❤️')">❤️</div>
+                        <div class="sticker" onclick="addSticker(${post.id}, '😢')">😢</div>
+                        <div class="sticker" onclick="addSticker(${post.id}, '😮')">😮</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getPostTypeLabel(type) {
+            const labels = {
+                job: '仕事',
+                task: 'タスク',
+                house: 'お部屋探し',
+                help: '助け',
+                visa: 'ビザ',
+                money: '送金'
+            };
+            return labels[type] || type;
+        }
+
+        function renderComments(postId) {
+            const postComments = comments.filter(c => c.postId === postId);
+            return postComments.map(comment => `
+                <div class="comment">
+                    <div class="comment-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="comment-content">
+                        <div class="comment-author">${comment.author}</div>
+                        <div class="comment-text">
+                            ${comment.text.replace(/@(\w+)/g, '<span class="comment-mention">@$1</span>')}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ===== ソーシャル機能 =====
+        window.toggleReactions = function(postId) {
+            const el = document.getElementById(`reactions-${postId}`);
+            el.style.display = el.style.display === 'none' ? 'flex' : 'none';
+        };
+
+        window.toggleComments = function(postId) {
+            const el = document.getElementById(`comments-${postId}`);
+            el.style.display = el.style.display === 'none' ? 'block' : 'none';
+        };
+
+        window.openMention = function(postId) {
+            const input = document.getElementById(`comment-input-${postId}`);
+            input.value += '@';
+            input.focus();
+            toggleComments(postId);
+        };
+
+        window.openStickers = function(postId) {
+            const el = document.getElementById(`stickers-${postId}`);
+            el.classList.toggle('active');
+        };
+
+        window.addReaction = function(postId, type) {
+            if (!currentUser) {
+                alert('ログインが必要です');
+                return;
+            }
+            
+            const post = posts.find(p => p.id === postId);
+            if (post) {
+                post.reactions = post.reactions || {};
+                post.reactions[type] = (post.reactions[type] || 0) + 1;
+                localStorage.setItem('posts', JSON.stringify(posts));
+                displayPosts(posts.filter(p => 
+                    currentMode === 'jobs' ? p.type === 'job' : 
+                    currentMode === 'tasks' ? p.type === 'task' : true
+                ));
+            }
+        };
+
+        window.addComment = function(postId) {
+            if (!currentUser) {
+                alert('ログインが必要です');
+                return;
+            }
+            
+            const input = document.getElementById(`comment-input-${postId}`);
+            const text = input.value.trim();
+            
+            if (text) {
+                comments.push({
+                    id: comments.length + 1,
+                    postId: postId,
+                    author: currentUser.name,
+                    text: text,
+                    date: new Date().toISOString()
+                });
+                
+                localStorage.setItem('comments', JSON.stringify(comments));
+                input.value = '';
+                
+                // メンション処理
+                const mentions = text.match(/@(\w+)/g);
+                if (mentions) {
+                    alert(`${mentions.join(', ')} にメンションしました`);
+                }
+                
+                displayPosts(posts.filter(p => 
+                    currentMode === 'jobs' ? p.type === 'job' : 
+                    currentMode === 'tasks' ? p.type === 'task' : true
+                ));
+            }
+        };
+
+        window.addSticker = function(postId, sticker) {
+            if (!currentUser) {
+                alert('ログインが必要です');
+                return;
+            }
+            
+            alert(`ステッカー「${sticker}」を追加しました`);
+            document.getElementById(`stickers-${postId}`).classList.remove('active');
+        };
+
+        // ===== 投稿機能 =====
+        document.getElementById('post-link').addEventListener('click', function(e) {
+            e.preventDefault();
+            if (!currentUser) {
+                alert('投稿するにはログインが必要です');
+                document.getElementById('login-modal').style.display = 'block';
+                return;
+            }
+            document.getElementById('post-type-modal').style.display = 'block';
+        });
+
+        document.querySelectorAll('.post-type-card').forEach(card => {
+            card.addEventListener('click', function() {
+                document.querySelectorAll('.post-type-card').forEach(c => c.classList.remove('selected'));
+                this.classList.add('selected');
+                document.getElementById('next-to-details').disabled = false;
+            });
+        });
+
+        document.getElementById('next-to-details').addEventListener('click', function() {
+            const selected = document.querySelector('.post-type-card.selected');
+            if (!selected) return;
+            
+            const postType = selected.dataset.postType;
+            document.getElementById('post-type-modal').style.display = 'none';
+            
+            // フォーム表示切り替え
+            document.querySelectorAll('#post-details-form > div[id$="-details-form"]').forEach(f => f.style.display = 'none');
+            document.getElementById(`${postType}-details-form`).style.display = 'block';
+            
+            document.getElementById('post-details-modal').style.display = 'block';
+        });
+
+        document.getElementById('post-details-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const selected = document.querySelector('.post-type-card.selected');
+            const postType = selected.dataset.postType;
+            
+            const newPost = {
+                id: posts.length + 1,
+                type: postType,
+                title: document.getElementById('post-title').value,
+                description: document.getElementById('post-description').value,
+                location: document.getElementById('post-location').value,
+                author: currentUser.name,
+                authorId: currentUser.id,
+                date: new Date().toISOString(),
+                reactions: {},
+                comments: []
+            };
+            
+            // 追加情報
+            if (postType === 'job') {
+                newPost.salary = document.getElementById('job-salary').value;
+                newPost.workingHours = document.getElementById('job-hours').value;
+                newPost.category = 'short-term';
+            } else if (postType === 'language') {
+                newPost.language = document.getElementById('learn-language').value;
+            } else if (postType === 'translation') {
+                newPost.languagePair = document.getElementById('translation-languages').value;
+            } else if (postType === 'visa') {
+                newPost.visaType = document.getElementById('visa-type').value;
+            } else if (postType === 'money') {
+                newPost.companyName = document.getElementById('company-name').value;
+            } else if (postType === 'house') {
+                newPost.rent = document.getElementById('house-rent').value;
+                newPost.houseType = document.getElementById('house-type').value;
+                newPost.houseSize = document.getElementById('house-size').value;
+            } else if (postType === 'task') {
+                newPost.taskType = document.getElementById('task-type').value;
+            }
+            
+            posts.push(newPost);
+            localStorage.setItem('posts', JSON.stringify(posts));
+            
+            alert('投稿しました！');
+            this.reset();
+            document.getElementById('post-details-modal').style.display = 'none';
+            
+            // 投稿一覧更新
+            if (currentMode === 'jobs' && postType === 'job') {
+                filterPosts('job');
+            } else if (currentMode === 'tasks' && postType === 'task') {
+                filterPosts('task');
+            } else {
+                displayPosts(posts);
+            }
+        });
+
+        document.getElementById('cancel-post').addEventListener('click', function() {
+            document.getElementById('post-details-modal').style.display = 'none';
+            document.getElementById('post-type-modal').style.display = 'block';
+        });
+
+        document.getElementById('cancel-post-type').addEventListener('click', function() {
+            document.getElementById('post-type-modal').style.display = 'none';
+        });
+
+        // ===== 海外送金機能 =====
+        window.openMoneyTransferModal = function() {
+            document.getElementById('money-transfer-modal').style.display = 'block';
+        };
+
+        window.closeMoneyTransferModal = function() {
+            document.getElementById('money-transfer-modal').style.display = 'none';
+        };
+
+        document.getElementById('calculate-transfer').addEventListener('click', function() {
+            const amount = parseFloat(document.getElementById('send-amount').value);
+            const country = document.getElementById('send-country').value;
+            
+            if (!amount || amount <= 0) {
+                alert('金額を入力してください');
+                return;
+            }
+            
+            const rate = exchangeRates[country];
+            const received = amount * rate;
+            
+            document.getElementById('exchange-rate').value = rate;
+            document.getElementById('result-text').textContent = 
+                `${amount.toLocaleString()} 円 = ${received.toLocaleString()} ${getCountryName(country)}`;
+            document.getElementById('transfer-result').style.display = 'block';
+            
+            updateTransferSummary();
+        });
+
+        document.getElementById('confirm-transfer').addEventListener('click', function() {
+            const amount = document.getElementById('send-amount').value;
+            const name = document.getElementById('recipient-name').value;
+            const bank = document.getElementById('recipient-bank').value;
+            
+            if (!amount || !name || !bank) {
+                alert('全ての項目を入力してください');
+                return;
+            }
+            
+            updateTransferSummary();
+            this.style.display = 'none';
+            document.getElementById('final-transfer').style.display = 'inline-block';
+        });
+
+        window.sendMoney = function() {
+            const mailBody = `
+海外送金依頼
+-------------------
+送金額: ${document.getElementById('send-amount').value}円
+受取人名: ${document.getElementById('recipient-name').value}
+電話番号: ${document.getElementById('recipient-phone').value}
+銀行口座: ${document.getElementById('recipient-bank').value}
+送金日時: ${new Date().toLocaleString()}
+            `;
+            
+            console.log('To: miraizones@gmail.com');
+            console.log('Subject: 海外送金依頼');
+            console.log('Body:', mailBody);
+            
+            alert('送金依頼を受け付けました。確認メールをお送りします。');
+            closeMoneyTransferModal();
+        };
+
+        function updateTransferSummary() {
+            document.getElementById('summary-amount').textContent = 
+                document.getElementById('send-amount').value || '-';
+            document.getElementById('summary-name').textContent = 
+                document.getElementById('recipient-name').value || '-';
+            document.getElementById('summary-bank').textContent = 
+                document.getElementById('recipient-bank').value || '-';
+        }
+
+        function getCountryName(country) {
+            const names = {
+                npr: 'ネパールルピー',
+                vnd: 'ベトナムドン',
+                bdt: 'バングラデシュタカ',
+                php: 'フィリピンペソ'
+            };
+            return names[country];
+        }
+
+        // ===== 広告問い合わせ =====
+        document.getElementById('ad-contact-btn').addEventListener('click', function() {
+            document.getElementById('ad-contact-modal').style.display = 'block';
+        });
+
+        document.getElementById('ad-contact-link').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('ad-contact-modal').style.display = 'block';
+        });
+
+        document.getElementById('ad-contact-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('問い合わせを送信しました');
+            this.reset();
+            document.getElementById('ad-contact-modal').style.display = 'none';
+        });
+
+        document.getElementById('cancel-ad-contact').addEventListener('click', function() {
+            document.getElementById('ad-contact-modal').style.display = 'none';
+        });
+
+        // ===== 共通関数 =====
+        function getCurrentLanguage() {
+            const activeBtn = document.querySelector('.lang-btn.active');
+            return activeBtn ? activeBtn.dataset.lang : 'ja';
+        }
+
+        // ===== モーダル制御 =====
+        document.querySelectorAll('.close').forEach(btn => {
+            btn.addEventListener('click', function() {
+                this.closest('.modal').style.display = 'none';
+            });
+        });
+
+        window.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal')) {
+                e.target.style.display = 'none';
+            }
+        });
+
+        // ===== モバイルメニュー =====
+        document.querySelector('.mobile-menu-toggle').addEventListener('click', function() {
+            document.querySelector('.nav-links').classList.toggle('active');
+        });
+
+        // ===== グローバル検索 =====
+        window.searchPosts = function() {
+            const query = document.getElementById('global-search').value.toLowerCase();
+            if (!query) {
+                displayPosts(posts);
+                return;
+            }
+            
+            const filtered = posts.filter(post => 
+                post.title.toLowerCase().includes(query) ||
+                post.description.toLowerCase().includes(query) ||
+                (post.location && post.location.toLowerCase().includes(query))
+            );
+            
+            displayPosts(filtered);
+        };
+
+        // ===== 初期化 =====
+        document.addEventListener('DOMContentLoaded', function() {
+            changeLanguage('ja');
+            updateProfileUI();
+            displayPosts(posts);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,2569 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>仕事を探す - ミライコネクト</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        /* ===== 基本リセット（既存と同じ） ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f7fa;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* ===== ヘッダー（既存と同じ） ===== */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background-color: #fff;
+            color: #2c3e50;
+            text-decoration: none;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .back-button:hover {
+            background-color: #2c3e50;
+            color: white;
+            transform: translateX(-5px);
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            color: #2c3e50;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background-color: #f39c12;
+            border-radius: 2px;
+        }
+
+        /* ===== フィルターセクション（既存と同じ） ===== */
+        .job-filters {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .job-filters h3 {
+            margin-right: 1rem;
+            color: #2c3e50;
+            font-size: 1.1rem;
+        }
+
+        .filter-select {
+            padding: 0.6rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            min-width: 180px;
+            background-color: #f9f9f9;
+            cursor: pointer;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .filter-clear {
+            padding: 0.6rem 1.2rem;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.3s;
+            margin-left: auto;
+        }
+
+        .filter-clear:hover {
+            background-color: #c0392b;
+        }
+
+        /* ===== 仕事一覧（既存と同じ） ===== */
+        .job-list {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .job-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+            border-left: 5px solid #3498db;
+        }
+
+        .job-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .job-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .job-title {
+            font-size: 1.4rem;
+            color: #2c3e50;
+        }
+
+        .job-badge {
+            background-color: #f39c12;
+            color: white;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .job-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin-bottom: 1rem;
+            color: #7f8c8d;
+            font-size: 0.95rem;
+        }
+
+        .job-meta i {
+            margin-right: 0.3rem;
+            color: #3498db;
+        }
+
+        .job-description {
+            color: #555;
+            margin-bottom: 1rem;
+            line-height: 1.8;
+        }
+
+        .job-details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            background-color: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-label {
+            font-size: 0.8rem;
+            color: #7f8c8d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .detail-value {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 1.1rem;
+        }
+
+        .apply-btn {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .apply-btn:hover {
+            background-color: #219a52;
+        }
+
+        .apply-btn:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+
+        /* ===== モーダル共通（既存と同じ） ===== */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 3% auto;
+            padding: 2rem;
+            border: none;
+            width: 90%;
+            max-width: 1000px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s;
+            line-height: 1;
+        }
+
+        .close:hover {
+            color: #e74c3c;
+        }
+
+        /* ===== ステップインジケーター（既存と同じ） ===== */
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            margin: 2rem 0;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            opacity: 0.5;
+        }
+
+        .step.active {
+            opacity: 1;
+        }
+
+        .step.completed .step-number {
+            background-color: #27ae60;
+        }
+
+        .step-number {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background-color: #3498db;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .step-label {
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        /* ===== フォーム（既存と同じ） ===== */
+        .form-step {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .required::after {
+            content: " *";
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        .optional {
+            font-size: 0.8rem;
+            color: #7f8c8d;
+            margin-left: 0.5rem;
+            font-weight: normal;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 0.85rem;
+            margin-top: 0.3rem;
+            display: none;
+        }
+
+        .form-group.error input,
+        .form-group.error select,
+        .form-group.error textarea {
+            border-color: #e74c3c;
+        }
+
+        .form-group.error .error-message {
+            display: block;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .radio-group label {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: normal;
+            margin-bottom: 0;
+        }
+
+        .radio-group input[type="radio"] {
+            width: auto;
+        }
+
+        /* ===== 郵便番号入力（既存と同じ） ===== */
+        .postal-row {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .postal-row input {
+            flex: 1;
+        }
+
+        .postal-row span {
+            color: #7f8c8d;
+        }
+
+        /* ===== ファイルアップロード（既存と同じ） ===== */
+        .file-upload-container {
+            margin-bottom: 1rem;
+        }
+
+        .file-upload-area {
+            border: 2px dashed #3498db;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            background-color: #f0f8ff;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .file-upload-area:hover {
+            background-color: #e1f0fa;
+        }
+
+        .file-upload-area i {
+            font-size: 2rem;
+            color: #3498db;
+            margin-bottom: 0.5rem;
+        }
+
+        .file-upload-area input[type="file"] {
+            display: none;
+        }
+
+        .file-list {
+            margin-top: 0.5rem;
+        }
+
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #f8f9fa;
+            padding: 0.8rem;
+            border-radius: 8px;
+            margin-top: 0.5rem;
+            border: 1px solid #ddd;
+        }
+
+        .file-item i {
+            color: #27ae60;
+            margin-right: 0.5rem;
+        }
+
+        .file-item .file-name {
+            flex: 1;
+        }
+
+        .file-item .file-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .file-item .file-action-btn {
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            border: none;
+        }
+
+        .file-item .add-more-btn {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .file-item .remove-file {
+            color: #e74c3c;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-size: 1rem;
+        }
+
+        /* ===== 写真アップロード（既存と同じ） ===== */
+        .photo-upload {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .photo-preview {
+            width: 100px;
+            height: 120px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .photo-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .photo-preview i {
+            font-size: 2rem;
+            color: #95a5a6;
+        }
+
+        /* ===== 履歴書選択カード（既存と同じ） ===== */
+        .resume-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .resume-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .resume-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .resume-card.selected {
+            border-color: #3498db;
+            background-color: #f0f8ff;
+        }
+
+        .resume-card i {
+            font-size: 3rem;
+            color: #3498db;
+            margin-bottom: 1rem;
+        }
+
+        .resume-card h3 {
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .resume-card p {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        /* ===== 履歴書作成フォーム（既存と同じ） ===== */
+        .resume-builder {
+            background-color: #f8f9fa;
+            padding: 2rem;
+            border-radius: 12px;
+            margin: 1rem 0;
+            border: 1px solid #ddd;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .resume-section {
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .resume-section h4 {
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
+            background-color: #e9ecef;
+            padding: 0.8rem;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-row-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .education-item,
+        .experience-item,
+        .qualification-item {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+            border: 1px solid #e0e0e0;
+        }
+
+        .add-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .add-btn:hover {
+            background-color: #2980b9;
+        }
+
+        .remove-btn {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+        }
+
+        .remove-btn:hover {
+            background-color: #c0392b;
+        }
+
+        .example-text {
+            font-size: 0.85rem;
+            color: #7f8c8d;
+            margin-top: 0.3rem;
+            font-style: italic;
+        }
+
+        /* ===== 確認画面（既存と同じ） ===== */
+        .confirm-section {
+            background-color: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+        }
+
+        .confirm-section h3 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #3498db;
+        }
+
+        .confirm-item {
+            display: flex;
+            margin-bottom: 0.8rem;
+        }
+
+        .confirm-label {
+            font-weight: 600;
+            width: 140px;
+            color: #555;
+        }
+
+        .confirm-value {
+            color: #333;
+            flex: 1;
+        }
+
+        /* ===== ボタン（既存と同じ） ===== */
+        .form-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.8rem 1.8rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: #95a5a6;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #7f8c8d;
+        }
+
+        .btn-success {
+            background-color: #27ae60;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #219a52;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* ===== PDFダウンロードボタン（既存と同じ） ===== */
+        .pdf-download-btn {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            width: 100%;
+            margin-top: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: background-color 0.3s;
+        }
+
+        .pdf-download-btn:hover {
+            background-color: #c0392b;
+        }
+
+        /* ===== レスポンシブ（既存と同じ） ===== */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .job-filters {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-clear {
+                margin-left: 0;
+            }
+
+            .job-header {
+                flex-direction: column;
+            }
+
+            .modal-content {
+                margin: 0;
+                width: 100%;
+                min-height: 100vh;
+                border-radius: 0;
+                padding: 1rem;
+            }
+
+            .step-indicator {
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                padding-bottom: 0.5rem;
+            }
+
+            .step {
+                flex-shrink: 0;
+            }
+
+            .confirm-item {
+                flex-direction: column;
+                gap: 0.3rem;
+            }
+
+            .confirm-label {
+                width: auto;
+            }
+
+            .form-navigation {
+                flex-direction: column-reverse;
+            }
+
+            .form-navigation button {
+                width: 100%;
+            }
+
+            .radio-group {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+
+            .postal-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .photo-upload {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .resume-options {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row, .form-row-3 {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="page-header">
+            <a href="index.html" class="back-button">
+                <i class="fas fa-arrow-left"></i> ホームに戻る
+            </a>
+            <h1><i class="fas fa-briefcase" style="color: #f39c12; margin-right: 0.5rem;"></i>短期・単発バイトを探す</h1>
+        </div>
+        
+        <!-- フィルターセクション -->
+        <div class="job-filters">
+            <h3><i class="fas fa-filter"></i> 絞り込み</h3>
+            <select id="locationFilter" class="filter-select">
+                <option value="all">すべての場所</option>
+            </select>
+            <button id="clearFilters" class="filter-clear"><i class="fas fa-times"></i> クリア</button>
+        </div>
+        
+        <!-- 仕事一覧表示エリア -->
+        <div id="jobList" class="job-list">
+            <p style="text-align: center; padding: 3rem; background: white; border-radius: 12px;">読み込み中...</p>
+        </div>
+    </div>
+
+    <!-- 応募フォームモーダル -->
+    <div id="applicationModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeModal">&times;</span>
+            <h2 style="color: #2c3e50; margin-bottom: 1rem;" id="modalJobTitle">応募フォーム</h2>
+            
+            <!-- ステップインジケーター -->
+            <div class="step-indicator">
+                <div class="step active" id="step1Indicator">
+                    <div class="step-number">1</div>
+                    <div class="step-label">履歴書選択</div>
+                </div>
+                <div class="step" id="step2Indicator">
+                    <div class="step-number">2</div>
+                    <div class="step-label">基本情報</div>
+                </div>
+                <div class="step" id="step3Indicator">
+                    <div class="step-number">3</div>
+                    <div class="step-label">追加書類</div>
+                </div>
+                <div class="step" id="step4Indicator">
+                    <div class="step-number">4</div>
+                    <div class="step-label">確認</div>
+                </div>
+            </div>
+
+            <!-- フォームステップ1: 履歴書選択/作成 -->
+            <div id="step1" class="form-step">
+                <h3 style="color: #3498db; margin-bottom: 1.5rem;">ステップ1: 履歴書を選択または作成してください</h3>
+                
+                <!-- 履歴書選択オプション -->
+                <div class="resume-options">
+                    <div class="resume-card" id="uploadResumeOption" onclick="selectResumeOption('upload')">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <h3>履歴書をアップロード</h3>
+                        <p>お持ちの履歴書ファイルをアップロード（PDF/Word/画像）</p>
+                    </div>
+                    <div class="resume-card" id="createResumeOption" onclick="selectResumeOption('create')">
+                        <i class="fas fa-pen-fancy"></i>
+                        <h3>履歴書を作成する</h3>
+                        <p>フォームに必要事項を入力して履歴書を作成</p>
+                    </div>
+                </div>
+
+                <!-- アップロードエリア -->
+                <div id="uploadResumeArea" style="display: none; margin-top: 2rem;">
+                    <div class="file-upload-container" id="resumeUploadContainer">
+                        <div class="file-upload-area" id="resumeFileUploadArea">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>クリックして履歴書をアップロード（PDF/Word/画像）</p>
+                            <input type="file" id="uploadedResumeFile" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                        </div>
+                    </div>
+                    <div id="uploadedResumeFileList" class="file-list"></div>
+                </div>
+
+                <!-- 履歴書作成エリア -->
+                <div id="createResumeArea" style="display: none; margin-top: 2rem;">
+                    <div id="resumeBuilder" class="resume-builder">
+                        <!-- 1️⃣ 基本個人情報 -->
+                        <div class="resume-section">
+                            <h4>1️⃣ 基本個人情報</h4>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>氏名（フルネーム）</label>
+                                    <input type="text" id="resume_fullname" placeholder="例: 山田 太郎">
+                                </div>
+                                <div class="form-group">
+                                    <label>ふりがな</label>
+                                    <input type="text" id="resume_furigana" placeholder="例: やまだ たろう">
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>生年月日</label>
+                                    <input type="date" id="resume_birthdate">
+                                </div>
+                                <div class="form-group">
+                                    <label>性別</label>
+                                    <select id="resume_gender">
+                                        <option value="">選択してください</option>
+                                        <option value="男性">男性</option>
+                                        <option value="女性">女性</option>
+                                        <option value="その他">その他</option>
+                                        <option value="回答しない">回答しない</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>郵便番号</label>
+                                    <div class="postal-row">
+                                        <input type="text" id="resume_postal1" placeholder="123" maxlength="3"> 
+                                        <span>-</span>
+                                        <input type="text" id="resume_postal2" placeholder="4567" maxlength="4">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>住所</label>
+                                <input type="text" id="resume_address" placeholder="例: 東京都新宿区...">
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>電話番号</label>
+                                    <input type="tel" id="resume_phone" placeholder="例: 090-1234-5678">
+                                </div>
+                                <div class="form-group">
+                                    <label>メールアドレス</label>
+                                    <input type="email" id="resume_email" placeholder="example@email.com">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2️⃣ 学歴 -->
+                        <div class="resume-section">
+                            <h4>2️⃣ 学歴（高校以降）</h4>
+                            <div id="educationList">
+                                <div class="education-item">
+                                    <div class="form-group">
+                                        <input type="text" placeholder="学校名（例: ○○高等学校）">
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="text" placeholder="学部 / 学科（例: 普通科）">
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <input type="text" placeholder="入学年月（例: 2018年4月）">
+                                        </div>
+                                        <div class="form-group">
+                                            <input type="text" placeholder="卒業年月（例: 2021年3月）">
+                                        </div>
+                                    </div>
+                                    <div class="example-text">例: 2018年4月 ○○高校 入学 / 2021年3月 ○○高校 卒業</div>
+                                    <button type="button" class="remove-btn" onclick="this.parentElement.remove()">削除</button>
+                                </div>
+                            </div>
+                            <button type="button" class="add-btn" id="addEducation"><i class="fas fa-plus"></i> 学歴を追加</button>
+                        </div>
+
+                        <!-- 3️⃣ 職歴 -->
+                        <div class="resume-section">
+                            <h4>3️⃣ 職歴（アルバイト含む）</h4>
+                            <div id="experienceList">
+                                <div class="experience-item">
+                                    <div class="form-group">
+                                        <input type="text" placeholder="会社名">
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <input type="text" placeholder="入社年月（例: 2022年4月）">
+                                        </div>
+                                        <div class="form-group">
+                                            <input type="text" placeholder="退社年月（例: 2024年3月）">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <textarea placeholder="仕事内容（簡単に）" rows="2"></textarea>
+                                    </div>
+                                    <div class="example-text">例: 2022年4月 株式会社○○ 入社 / 接客業務担当</div>
+                                    <button type="button" class="remove-btn" onclick="this.parentElement.remove()">削除</button>
+                                </div>
+                            </div>
+                            <button type="button" class="add-btn" id="addExperience"><i class="fas fa-plus"></i> 職歴を追加</button>
+                        </div>
+
+                        <!-- 4️⃣ 資格・スキル -->
+                        <div class="resume-section">
+                            <h4>4️⃣ 資格・スキル</h4>
+                            <div id="qualificationList">
+                                <div class="qualification-item">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <input type="text" placeholder="資格名（例: 日本語能力試験 N2）">
+                                        </div>
+                                        <div class="form-group">
+                                            <input type="text" placeholder="取得年月（例: 2023年12月）">
+                                        </div>
+                                    </div>
+                                    <div class="example-text">例: 日本語能力試験（JLPT）N2 / 普通自動車免許 / Excel</div>
+                                    <button type="button" class="remove-btn" onclick="this.parentElement.remove()">削除</button>
+                                </div>
+                            </div>
+                            <button type="button" class="add-btn" id="addQualification"><i class="fas fa-plus"></i> 資格を追加</button>
+                        </div>
+
+                        <!-- 5️⃣ 志望動機 -->
+                        <div class="resume-section">
+                            <h4>5️⃣ 志望動機</h4>
+                            <textarea id="resume_motivation" rows="4" style="width: 100%;" placeholder="なぜその会社で働きたいか、自分の経験や強み、どう貢献できるかを記入してください"></textarea>
+                            <div class="example-text">※会社に興味を持った理由、自分の経験や強み、どう貢献できるか</div>
+                        </div>
+
+                        <!-- 6️⃣ 自己PR -->
+                        <div class="resume-section">
+                            <h4>6️⃣ 自己PR</h4>
+                            <textarea id="resume_selfPr" rows="4" style="width: 100%;" placeholder="自分の強みや性格（コミュニケーション能力、チームワーク、責任感など）"></textarea>
+                            <div class="example-text">例: コミュニケーション能力、チームワーク、責任感、忍耐力、技術スキル</div>
+                        </div>
+
+                        <!-- 7️⃣ 希望条件 -->
+                        <div class="resume-section">
+                            <h4>7️⃣ 希望条件</h4>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>希望職種</label>
+                                    <input type="text" id="resume_desiredJob" placeholder="例: 営業職、エンジニア">
+                                </div>
+                                <div class="form-group">
+                                    <label>希望勤務地</label>
+                                    <input type="text" id="resume_desiredLocation" placeholder="例: 東京都内、大阪">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>希望給与</label>
+                                    <input type="text" id="resume_desiredSalary" placeholder="例: 月給25万円以上">
+                                </div>
+                                <div class="form-group">
+                                    <label>勤務開始可能日</label>
+                                    <input type="text" id="resume_availableDate" placeholder="例: 即日、2024年4月1日">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 8️⃣ 在留資格（常に表示） -->
+                        <div class="resume-section">
+                            <h4>8️⃣ 在留資格</h4>
+                            <div class="form-group">
+                                <label>在留カード番号</label>
+                                <input type="text" id="resume_residenceCard" placeholder="例: AB1234567890">
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>在留資格の種類</label>
+                                    <input type="text" id="resume_residenceType" placeholder="例: 技術・人文知識・国際業務">
+                                </div>
+                                <div class="form-group">
+                                    <label>在留期限</label>
+                                    <input type="text" id="resume_residenceExpiry" placeholder="例: 2025年12月31日">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 9️⃣ 追加で求められること -->
+                        <div class="resume-section">
+                            <h4>9️⃣ 追加提出書類</h4>
+                            <p><small>※後のステップでアップロードできます</small></p>
+                            <ul style="margin-left: 1.5rem; color: #555;">
+                                <li>職務経歴書</li>
+                                <li>ポートフォリオ（デザイン・IT系）</li>
+                                <li>推薦状</li>
+                                <li>卒業証明書</li>
+                                <li>成績証明書</li>
+                            </ul>
+                        </div>
+
+                        <!-- ここが修正ポイント：画像のような履歴書PDFを生成するボタン -->
+                        <button type="button" class="pdf-download-btn" id="downloadResumePdf">
+                            <i class="fas fa-file-pdf"></i> この内容で履歴書PDFをダウンロード（画像レイアウト・ミライゾーンロゴ入り）
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- フォームステップ2: 基本情報 -->
+            <div id="step2" class="form-step" style="display: none;">
+                <h3 style="color: #3498db; margin-bottom: 1.5rem;">ステップ2: 基本情報（必須）</h3>
+                
+                <div class="form-group required" id="group-fullname">
+                    <label class="required">氏名（フルネーム）</label>
+                    <input type="text" id="fullname" placeholder="例: 山田 太郎">
+                    <div class="error-message">氏名は必須項目です</div>
+                </div>
+
+                <div class="form-group required" id="group-furigana">
+                    <label class="required">ふりがな</label>
+                    <input type="text" id="furigana" placeholder="例: やまだ たろう">
+                    <div class="error-message">ふりがなは必須項目です</div>
+                </div>
+
+                <div class="form-group required" id="group-birthdate">
+                    <label class="required">生年月日</label>
+                    <input type="date" id="birthdate">
+                    <div class="error-message">生年月日は必須項目です</div>
+                </div>
+
+                <div class="form-group">
+                    <label>性別 <span class="optional">（任意）</span></label>
+                    <div class="radio-group">
+                        <label><input type="radio" name="gender" value="male"> 男性</label>
+                        <label><input type="radio" name="gender" value="female"> 女性</label>
+                        <label><input type="radio" name="gender" value="other"> その他</label>
+                        <label><input type="radio" name="gender" value="no-answer"> 回答しない</label>
+                    </div>
+                </div>
+
+                <div class="form-group required" id="group-postal">
+                    <label class="required">郵便番号</label>
+                    <div class="postal-row">
+                        <input type="text" id="postal1" placeholder="123" maxlength="3" style="flex: 0.5;"> 
+                        <span>-</span>
+                        <input type="text" id="postal2" placeholder="4567" maxlength="4" style="flex: 0.7;">
+                    </div>
+                    <div class="error-message">郵便番号は必須です</div>
+                </div>
+
+                <div class="form-group required" id="group-address">
+                    <label class="required">住所</label>
+                    <input type="text" id="address" placeholder="例: 東京都新宿区...">
+                    <div class="error-message">住所は必須項目です</div>
+                </div>
+
+                <div class="form-group required" id="group-phone">
+                    <label class="required">電話番号</label>
+                    <input type="tel" id="phone" placeholder="例: 090-1234-5678">
+                    <div class="error-message">電話番号は必須項目です</div>
+                </div>
+
+                <div class="form-group required" id="group-email">
+                    <label class="required">メールアドレス</label>
+                    <input type="email" id="email" placeholder="example@email.com">
+                    <div class="error-message">有効なメールアドレスを入力してください</div>
+                </div>
+
+                <div class="form-group">
+                    <label>履歴書用写真 <span class="optional">（任意）</span></label>
+                    <div class="photo-upload">
+                        <div class="photo-preview" id="photoPreview">
+                            <i class="fas fa-camera"></i>
+                        </div>
+                        <div>
+                            <div class="file-upload-area" style="padding: 1rem;" id="photoUploadArea">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <p>クリックして写真をアップロード</p>
+                                <input type="file" id="photoFile" accept=".jpg,.jpeg,.png">
+                            </div>
+                            <div id="photoFileList" class="file-list"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group required" id="group-nationality">
+                    <label class="required">国籍</label>
+                    <div class="radio-group" style="margin-bottom: 0.5rem;">
+                        <label><input type="radio" name="nationality-type" value="japanese" checked> 日本</label>
+                        <label><input type="radio" name="nationality-type" value="foreign"> 外国人</label>
+                    </div>
+                    <div id="foreignCountrySelect" style="display: none; margin-top: 0.5rem;">
+                        <select id="country" class="filter-select" style="width: 100%;">
+                            <option value="">国を選択してください</option>
+                            <option value="ネパール">ネパール</option>
+                            <option value="ベトナム">ベトナム</option>
+                            <option value="中国">中国</option>
+                            <option value="韓国">韓国</option>
+                            <option value="フィリピン">フィリピン</option>
+                            <option value="インドネシア">インドネシア</option>
+                            <option value="タイ">タイ</option>
+                            <option value="ミャンマー">ミャンマー</option>
+                            <option value="その他">その他</option>
+                        </select>
+                    </div>
+                    <div class="error-message" id="country-error">外国人の場合は国を選択してください</div>
+                </div>
+            </div>
+
+            <!-- フォームステップ3: 追加書類 -->
+            <div id="step3" class="form-step" style="display: none;">
+                <h3 style="color: #3498db; margin-bottom: 1.5rem;">ステップ3: 追加書類（任意）</h3>
+
+                <!-- 職務経歴書 -->
+                <div class="file-upload-container" id="workHistoryContainer">
+                    <div class="form-group">
+                        <label>職務経歴書</label>
+                        <div class="file-upload-area" id="workHistoryUploadArea">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>クリックして職務経歴書をアップロード（PDF/Word/画像）</p>
+                            <input type="file" id="workHistoryFile" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                        </div>
+                    </div>
+                </div>
+                <div id="workHistoryFileList" class="file-list"></div>
+
+                <!-- ポートフォリオ -->
+                <div class="file-upload-container" id="portfolioContainer">
+                    <div class="form-group">
+                        <label>ポートフォリオ</label>
+                        <div class="file-upload-area" id="portfolioUploadArea">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>クリックしてポートフォリオをアップロード</p>
+                            <input type="file" id="portfolioFile" accept=".pdf,.zip,.jpg,.jpeg,.png">
+                        </div>
+                    </div>
+                </div>
+                <div id="portfolioFileList" class="file-list"></div>
+
+                <!-- 推薦状 -->
+                <div class="file-upload-container" id="recommendationContainer">
+                    <div class="form-group">
+                        <label>推薦状</label>
+                        <div class="file-upload-area" id="recommendationUploadArea">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>クリックして推薦状をアップロード</p>
+                            <input type="file" id="recommendationFile" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                        </div>
+                    </div>
+                </div>
+                <div id="recommendationFileList" class="file-list"></div>
+
+                <!-- 卒業証明書 -->
+                <div class="file-upload-container" id="diplomaContainer">
+                    <div class="form-group">
+                        <label>卒業証明書</label>
+                        <div class="file-upload-area" id="diplomaUploadArea">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>クリックして卒業証明書をアップロード</p>
+                            <input type="file" id="diplomaFile" accept=".pdf,.jpg,.jpeg,.png">
+                        </div>
+                    </div>
+                </div>
+                <div id="diplomaFileList" class="file-list"></div>
+
+                <!-- 成績証明書 -->
+                <div class="file-upload-container" id="transcriptContainer">
+                    <div class="form-group">
+                        <label>成績証明書</label>
+                        <div class="file-upload-area" id="transcriptUploadArea">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>クリックして成績証明書をアップロード</p>
+                            <input type="file" id="transcriptFile" accept=".pdf,.jpg,.jpeg,.png">
+                        </div>
+                    </div>
+                </div>
+                <div id="transcriptFileList" class="file-list"></div>
+
+                <div class="form-group">
+                    <label>応募動機・メッセージ <span class="optional">（任意）</span></label>
+                    <textarea id="message" rows="4" placeholder="志望動機やアピールポイントがあればご記入ください（任意）"></textarea>
+                </div>
+            </div>
+
+            <!-- フォームステップ4: 確認画面 -->
+            <div id="step4" class="form-step" style="display: none;">
+                <h3 style="color: #3498db; margin-bottom: 1.5rem;">ステップ4: 入力内容の確認</h3>
+                
+                <div class="confirm-section">
+                    <h3><i class="fas fa-user"></i> 基本情報</h3>
+                    <div class="confirm-item">
+                        <div class="confirm-label">氏名:</div>
+                        <div class="confirm-value" id="confirmName"></div>
+                    </div>
+                    <div class="confirm-item">
+                        <div class="confirm-label">ふりがな:</div>
+                        <div class="confirm-value" id="confirmFurigana"></div>
+                    </div>
+                    <div class="confirm-item">
+                        <div class="confirm-label">生年月日:</div>
+                        <div class="confirm-value" id="confirmBirthdate"></div>
+                    </div>
+                    <div class="confirm-item">
+                        <div class="confirm-label">性別:</div>
+                        <div class="confirm-value" id="confirmGender"></div>
+                    </div>
+                    <div class="confirm-item">
+                        <div class="confirm-label">郵便番号:</div>
+                        <div class="confirm-value" id="confirmPostal"></div>
+                    </div>
+                    <div class="confirm-item">
+                        <div class="confirm-label">住所:</div>
+                        <div class="confirm-value" id="confirmAddress"></div>
+                    </div>
+                    <div class="confirm-item">
+                        <div class="confirm-label">電話番号:</div>
+                        <div class="confirm-value" id="confirmPhone"></div>
+                    </div>
+                    <div class="confirm-item">
+                        <div class="confirm-label">メールアドレス:</div>
+                        <div class="confirm-value" id="confirmEmail"></div>
+                    </div>
+                    <div class="confirm-item">
+                        <div class="confirm-label">国籍:</div>
+                        <div class="confirm-value" id="confirmNationality"></div>
+                    </div>
+                    <div class="confirm-item">
+                        <div class="confirm-label">在留資格:</div>
+                        <div class="confirm-value" id="confirmResidenceStatus"></div>
+                    </div>
+                </div>
+
+                <div class="confirm-section">
+                    <h3><i class="fas fa-file"></i> 応募書類</h3>
+                    <div class="confirm-item">
+                        <div class="confirm-label">履歴書:</div>
+                        <div class="confirm-value" id="confirmResume"></div>
+                    </div>
+                    <div class="confirm-item">
+                        <div class="confirm-label">職務経歴書:</div>
+                        <div class="confirm-value" id="confirmWorkHistory"></div>
+                    </div>
+                    <div class="confirm-item">
+                        <div class="confirm-label">ポートフォリオ:</div>
+                        <div class="confirm-value" id="confirmPortfolio"></div>
+                    </div>
+                    <div class="confirm-item">
+                        <div class="confirm-label">推薦状:</div>
+                        <div class="confirm-value" id="confirmRecommendation"></div>
+                    </div>
+                    <div class="confirm-item">
+                        <div class="confirm-label">卒業証明書:</div>
+                        <div class="confirm-value" id="confirmDiploma"></div>
+                    </div>
+                    <div class="confirm-item">
+                        <div class="confirm-label">成績証明書:</div>
+                        <div class="confirm-value" id="confirmTranscript"></div>
+                    </div>
+                    <div class="confirm-item">
+                        <div class="confirm-label">応募動機:</div>
+                        <div class="confirm-value" id="confirmMessage"></div>
+                    </div>
+                </div>
+
+                <div class="confirm-section">
+                    <h3><i class="fas fa-briefcase"></i> 応募先情報</h3>
+                    <div class="confirm-item">
+                        <div class="confirm-label">求人タイトル:</div>
+                        <div class="confirm-value" id="confirmJobTitle"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ナビゲーションボタン -->
+            <div class="form-navigation">
+                <button type="button" class="btn btn-secondary" id="prevBtn" style="display: none;">戻る</button>
+                <button type="button" class="btn btn-primary" id="nextBtn">次へ</button>
+                <button type="button" class="btn btn-success" id="submitBtn" style="display: none;">応募を確定する</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== グローバル変数 =====
+        let allJobs = [];
+        let currentJob = null;
+        let currentStep = 1;
+        let selectedResumeOption = null;
+        
+        // ファイル管理用
+        let uploadedResumeFiles = [];
+        let workHistoryFiles = [];
+        let portfolioFiles = [];
+        let recommendationFiles = [];
+        let diplomaFiles = [];
+        let transcriptFiles = [];
+        let photoFile = null;
+
+        // ===== DOM要素 =====
+        const jobListEl = document.getElementById('jobList');
+        const locationFilter = document.getElementById('locationFilter');
+        const clearFiltersBtn = document.getElementById('clearFilters');
+        const modal = document.getElementById('applicationModal');
+        const closeModal = document.getElementById('closeModal');
+        const modalJobTitle = document.getElementById('modalJobTitle');
+
+        // ステップ要素
+        const step1 = document.getElementById('step1');
+        const step2 = document.getElementById('step2');
+        const step3 = document.getElementById('step3');
+        const step4 = document.getElementById('step4');
+        const step1Indicator = document.getElementById('step1Indicator');
+        const step2Indicator = document.getElementById('step2Indicator');
+        const step3Indicator = document.getElementById('step3Indicator');
+        const step4Indicator = document.getElementById('step4Indicator');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const submitBtn = document.getElementById('submitBtn');
+
+        // 履歴書選択関連
+        const uploadResumeOption = document.getElementById('uploadResumeOption');
+        const createResumeOption = document.getElementById('createResumeOption');
+        const uploadResumeArea = document.getElementById('uploadResumeArea');
+        const createResumeArea = document.getElementById('createResumeArea');
+
+        // 国籍関連
+        const nationalityJapanese = document.querySelector('input[name="nationality-type"][value="japanese"]');
+        const nationalityForeign = document.querySelector('input[name="nationality-type"][value="foreign"]');
+        const foreignCountrySelect = document.getElementById('foreignCountrySelect');
+        const residenceStatusSection = document.getElementById('residenceStatusSection');
+        const countrySelect = document.getElementById('country');
+
+        // ===== 履歴書選択関数 =====
+        window.selectResumeOption = function(option) {
+            selectedResumeOption = option;
+            
+            if (uploadResumeOption) uploadResumeOption.classList.remove('selected');
+            if (createResumeOption) createResumeOption.classList.remove('selected');
+            
+            if (option === 'upload') {
+                if (uploadResumeOption) uploadResumeOption.classList.add('selected');
+                if (uploadResumeArea) uploadResumeArea.style.display = 'block';
+                if (createResumeArea) createResumeArea.style.display = 'none';
+            } else if (option === 'create') {
+                if (createResumeOption) createResumeOption.classList.add('selected');
+                if (uploadResumeArea) uploadResumeArea.style.display = 'none';
+                if (createResumeArea) createResumeArea.style.display = 'block';
+            }
+            
+            if (nextBtn) nextBtn.disabled = false;
+        };
+
+        // ===== 【修正】履歴書PDF生成関数（画像レイアウト風） =====
+        function generateResumePDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // フォント設定
+            doc.setFont("helvetica", "normal");
+            
+            // 現在の日付
+            const today = new Date();
+            const formattedDate = today.getFullYear() + '年' + (today.getMonth() + 1) + '月' + today.getDate() + '日';
+            
+            // 1ページ目
+            let y = 20;
+
+            // タイトル「履 歴 書」と日付
+            doc.setFontSize(20);
+            doc.text("履 歴 書", 105, y, { align: "center" });
+            doc.setFontSize(10);
+            doc.text(formattedDate + "現在", 190, y, { align: "right" });
+            y += 10;
+
+            // 写真枠（右寄せ）
+            doc.rect(150, y, 40, 50); // 写真枠
+            doc.setFontSize(8);
+            doc.text("写真を貼る位置", 170, y + 20, { align: "center" });
+            doc.text("縦36～40mm 横24～30mm", 170, y + 30, { align: "center" });
+            doc.text("本人単身胸から上", 170, y + 40, { align: "center" });
+            doc.text("裏面のりづけ", 170, y + 48, { align: "center" });
+
+            // 基本情報（左側）
+            doc.setFontSize(12);
+            const fullname = document.getElementById('resume_fullname')?.value || '未入力';
+            const furigana = document.getElementById('resume_furigana')?.value || '未入力';
+            const birthdate = document.getElementById('resume_birthdate')?.value;
+            let birthdateStr = '', age = '';
+            if (birthdate) {
+                const bd = new Date(birthdate);
+                birthdateStr = bd.getFullYear() + '年' + (bd.getMonth() + 1) + '月' + bd.getDate() + '日';
+                const today2 = new Date();
+                age = today2.getFullYear() - bd.getFullYear();
+                const m = today2.getMonth() - bd.getMonth();
+                if (m < 0 || (m === 0 && today2.getDate() < bd.getDate())) age--;
+            } else {
+                birthdateStr = '未入力';
+                age = '';
+            }
+            const gender = document.getElementById('resume_gender')?.value || '未選択';
+            const postal1 = document.getElementById('resume_postal1')?.value || '';
+            const postal2 = document.getElementById('resume_postal2')?.value || '';
+            const postal = (postal1 && postal2) ? `〒${postal1}-${postal2}` : '未入力';
+            const address = document.getElementById('resume_address')?.value || '未入力';
+            const phone = document.getElementById('resume_phone')?.value || '未入力';
+            const email = document.getElementById('resume_email')?.value || '未入力';
+
+            // 左側テキスト
+            doc.setFontSize(11);
+            doc.text("ふりがな", 20, y + 8);
+            doc.text("氏名", 20, y + 16);
+            doc.text("生年月日", 20, y + 24);
+            doc.text("現住所", 20, y + 32);
+            doc.text("連絡先", 20, y + 40);
+
+            // 右側の値
+            doc.text(furigana, 60, y + 8);
+            doc.text(fullname, 60, y + 16);
+            doc.text(birthdateStr + "（満" + age + "歳）", 60, y + 24);
+            doc.text(postal + " " + address, 60, y + 32);
+            doc.text(postal + " " + address, 60, y + 40); // 連絡先は現住所と同じとする
+
+            // 電話・メール
+            doc.text("TEL: " + phone, 60, y + 48);
+            doc.text("Email: " + email, 60, y + 56);
+
+            // 性別ラジオ風（男・女）
+            doc.text("男・女", 120, y + 16);
+            if (gender === '男性') doc.text("●", 114, y + 16);
+            else if (gender === '女性') doc.text("●", 124, y + 16);
+            else doc.text("○", 114, y + 16); // 仮
+
+            y += 70;
+
+            // 学歴・職歴の表
+            doc.setFontSize(14);
+            doc.text("学歴・職歴", 20, y);
+            y += 5;
+
+            // 学歴
+            doc.setFontSize(10);
+            const educationItems = [];
+            document.querySelectorAll('#educationList .education-item').forEach(item => {
+                const inputs = item.querySelectorAll('input');
+                if (inputs.length >= 4) {
+                    const school = inputs[0]?.value || '';
+                    const department = inputs[1]?.value || '';
+                    const entrance = inputs[2]?.value || '';
+                    const graduation = inputs[3]?.value || '';
+                    if (school || department || entrance || graduation) {
+                        educationItems.push({ entrance, graduation, school, department });
+                    }
+                }
+            });
+            if (educationItems.length === 0) {
+                doc.text("記載なし", 25, y);
+                y += 6;
+            } else {
+                educationItems.forEach(item => {
+                    doc.text(item.entrance + " " + item.school + " " + item.department + " 入学", 25, y);
+                    y += 5;
+                    doc.text(item.graduation + " 卒業", 25, y);
+                    y += 6;
+                });
+            }
+
+            // 職歴
+            const experienceItems = [];
+            document.querySelectorAll('#experienceList .experience-item').forEach(item => {
+                const inputs = item.querySelectorAll('input');
+                const textarea = item.querySelector('textarea');
+                if (inputs.length >= 3) {
+                    const company = inputs[0]?.value || '';
+                    const start = inputs[1]?.value || '';
+                    const end = inputs[2]?.value || '';
+                    const description = textarea ? textarea.value : '';
+                    if (company || start || end || description) {
+                        experienceItems.push({ start, end, company, description });
+                    }
+                }
+            });
+            if (experienceItems.length > 0) {
+                experienceItems.forEach(item => {
+                    doc.text(item.start + " " + item.company + " 入社", 25, y);
+                    y += 5;
+                    if (item.end) doc.text(item.end + " 退社", 25, y);
+                    y += 5;
+                    if (item.description) {
+                        const descLines = doc.splitTextToSize("業務内容: " + item.description, 160);
+                        descLines.forEach(line => {
+                            doc.text(line, 25, y);
+                            y += 5;
+                        });
+                    }
+                });
+            }
+
+            y += 5;
+
+            // 志望動機、自己PR
+            doc.setFontSize(14);
+            doc.text("志望の動機、自己PR、趣味、特技など", 20, y);
+            y += 5;
+            doc.setFontSize(10);
+            const motivation = document.getElementById('resume_motivation')?.value || '';
+            const selfPr = document.getElementById('resume_selfPr')?.value || '';
+            const combined = motivation + (motivation && selfPr ? ' / ' : '') + selfPr;
+            const lines = doc.splitTextToSize(combined || '未入力', 170);
+            lines.forEach(line => {
+                doc.text(line, 20, y);
+                y += 5;
+            });
+
+            y += 5;
+
+            // 通勤時間・扶養家族など
+            doc.setFontSize(11);
+            doc.text("通勤時間", 20, y);
+            doc.text("約　時間　分", 50, y);
+            doc.text("扶養家族（配偶者を除く）", 100, y);
+            doc.text("人", 160, y);
+            y += 8;
+            doc.text("配偶者", 20, y);
+            doc.text("有・無", 50, y);
+            doc.text("配偶者の扶養義務", 100, y);
+            doc.text("有・無", 160, y);
+            y += 10;
+
+            // 本人希望記入欄
+            doc.setFontSize(14);
+            doc.text("本人希望記入欄", 20, y);
+            y += 5;
+            doc.setFontSize(10);
+            const desiredJob = document.getElementById('resume_desiredJob')?.value || '';
+            const desiredLocation = document.getElementById('resume_desiredLocation')?.value || '';
+            const desiredSalary = document.getElementById('resume_desiredSalary')?.value || '';
+            const availableDate = document.getElementById('resume_availableDate')?.value || '';
+            const hopeText = `希望職種: ${desiredJob} / 勤務地: ${desiredLocation} / 給与: ${desiredSalary} / 開始可能日: ${availableDate}`;
+            const hopeLines = doc.splitTextToSize(hopeText, 170);
+            hopeLines.forEach(line => {
+                doc.text(line, 20, y);
+                y += 5;
+            });
+
+            // フッター（ミライゾーンロゴ入り）
+            doc.setFontSize(10);
+            doc.text("株式会社ミライゾーン", 105, 280, { align: "center" });
+            doc.text(`作成日: ${formattedDate}`, 105, 285, { align: "center" });
+
+            // PDFを保存
+            const nameForFile = fullname.replace(/\s+/g, '') || '履歴書';
+            doc.save(`履歴書_${nameForFile}.pdf`);
+        }
+
+        // ===== ファイルアップロード汎用関数 =====
+        function setupFileUpload(uploadAreaId, fileInputId, fileListId, fileArray, containerId, fileType) {
+            const uploadArea = document.getElementById(uploadAreaId);
+            const fileInput = document.getElementById(fileInputId);
+            const fileList = document.getElementById(fileListId);
+            
+            if (!uploadArea || !fileInput || !fileList) return;
+            
+            uploadArea.addEventListener('click', function() {
+                fileInput.click();
+            });
+            
+            fileInput.addEventListener('change', function(e) {
+                if (this.files.length > 0) {
+                    const newFiles = Array.from(this.files);
+                    fileArray.push(...newFiles);
+                    updateFileList(fileListId, fileArray, containerId, fileType);
+                }
+            });
+        }
+
+        function updateFileList(fileListId, fileArray, containerId, fileType) {
+            const fileList = document.getElementById(fileListId);
+            if (!fileList) return;
+            
+            fileList.innerHTML = '';
+            
+            fileArray.forEach((file, index) => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.innerHTML = `
+                    <span><i class="fas fa-file"></i> ${file.name}</span>
+                    <div class="file-actions">
+                        <button class="remove-file" onclick="removeFile('${fileListId}', ${index})"><i class="fas fa-times"></i> 削除</button>
+                    </div>
+                `;
+                fileList.appendChild(fileItem);
+            });
+
+            // ファイルがある場合は追加ボタンを表示
+            if (fileArray.length > 0 && containerId) {
+                const container = document.getElementById(containerId);
+                if (container) {
+                    // 既存の追加ボタンを削除
+                    const existingBtn = document.getElementById('addMoreBtn_' + containerId);
+                    if (existingBtn) existingBtn.remove();
+                    
+                    const addMoreBtn = document.createElement('button');
+                    addMoreBtn.id = 'addMoreBtn_' + containerId;
+                    addMoreBtn.className = 'add-btn';
+                    addMoreBtn.style.marginTop = '0.5rem';
+                    addMoreBtn.innerHTML = '<i class="fas fa-plus"></i> さらにファイルを追加';
+                    addMoreBtn.onclick = function() { addMoreFile(containerId, fileType); };
+                    container.appendChild(addMoreBtn);
+                }
+            }
+        }
+
+        window.addMoreFile = function(containerId, fileType) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            
+            const newUploadArea = document.createElement('div');
+            newUploadArea.className = 'file-upload-area';
+            newUploadArea.style.marginTop = '1rem';
+            
+            const inputId = 'additionalFile_' + Date.now();
+            newUploadArea.innerHTML = `
+                <i class="fas fa-cloud-upload-alt"></i>
+                <p>クリックして追加ファイルをアップロード</p>
+                <input type="file" id="${inputId}" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+            `;
+            
+            container.appendChild(newUploadArea);
+            
+            const newFileInput = document.getElementById(inputId);
+            newFileInput.addEventListener('change', function(e) {
+                if (this.files.length > 0) {
+                    alert('ファイルが追加されました: ' + this.files[0].name);
+                    // 実際の処理は必要に応じて実装
+                }
+            });
+            
+            newUploadArea.addEventListener('click', function() {
+                document.getElementById(inputId).click();
+            });
+        };
+
+        window.removeFile = function(fileListId, index) {
+            const fileList = document.getElementById(fileListId);
+            if (fileList) {
+                fileList.innerHTML = '';
+                // 実際の配列操作は必要に応じて実装
+            }
+        };
+
+        // ===== ファイルアップロードのセットアップ =====
+        function setupAllFileUploads() {
+            // 履歴書アップロード
+            setupFileUpload('resumeFileUploadArea', 'uploadedResumeFile', 'uploadedResumeFileList', uploadedResumeFiles, 'resumeUploadContainer', 'multiple');
+            
+            // 職務経歴書
+            setupFileUpload('workHistoryUploadArea', 'workHistoryFile', 'workHistoryFileList', workHistoryFiles, 'workHistoryContainer', 'multiple');
+            
+            // ポートフォリオ
+            setupFileUpload('portfolioUploadArea', 'portfolioFile', 'portfolioFileList', portfolioFiles, 'portfolioContainer', 'multiple');
+            
+            // 推薦状
+            setupFileUpload('recommendationUploadArea', 'recommendationFile', 'recommendationFileList', recommendationFiles, 'recommendationContainer', 'multiple');
+            
+            // 卒業証明書
+            setupFileUpload('diplomaUploadArea', 'diplomaFile', 'diplomaFileList', diplomaFiles, 'diplomaContainer', 'multiple');
+            
+            // 成績証明書
+            setupFileUpload('transcriptUploadArea', 'transcriptFile', 'transcriptFileList', transcriptFiles, 'transcriptContainer', 'multiple');
+            
+            // 写真アップロード
+            const photoUploadArea = document.getElementById('photoUploadArea');
+            const photoFileInput = document.getElementById('photoFile');
+            const photoPreview = document.getElementById('photoPreview');
+            const photoFileList = document.getElementById('photoFileList');
+            
+            if (photoUploadArea && photoFileInput) {
+                photoUploadArea.addEventListener('click', function() {
+                    photoFileInput.click();
+                });
+                
+                photoFileInput.addEventListener('change', function(e) {
+                    if (this.files.length > 0) {
+                        photoFile = this.files[0];
+                        if (photoFileList) {
+                            photoFileList.innerHTML = `
+                                <div class="file-item">
+                                    <span><i class="fas fa-image"></i> ${photoFile.name}</span>
+                                    <button class="remove-file" onclick="removePhoto()"><i class="fas fa-times"></i> 削除</button>
+                                </div>
+                            `;
+                        }
+                        
+                        // プレビュー表示
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            if (photoPreview) {
+                                photoPreview.innerHTML = `<img src="${e.target.result}" alt="preview">`;
+                            }
+                        };
+                        reader.readAsDataURL(photoFile);
+                    }
+                });
+            }
+        }
+
+        window.removePhoto = function() {
+            photoFile = null;
+            const photoFileInput = document.getElementById('photoFile');
+            if (photoFileInput) photoFileInput.value = '';
+            
+            const photoFileList = document.getElementById('photoFileList');
+            if (photoFileList) photoFileList.innerHTML = '';
+            
+            const photoPreview = document.getElementById('photoPreview');
+            if (photoPreview) photoPreview.innerHTML = '<i class="fas fa-camera"></i>';
+        };
+
+        // ===== 履歴書PDFダウンロードイベント =====
+        document.getElementById('downloadResumePdf').addEventListener('click', generateResumePDF);
+
+        // ===== 修正: 短期・単発バイトのデータ読み込み =====
+        function loadJobs() {
+            try {
+                const storedPosts = localStorage.getItem('jobs');
+                console.log('localStorage jobs:', storedPosts); // デバッグ用
+                
+                if (storedPosts) {
+                    const parsedPosts = JSON.parse(storedPosts);
+                    console.log('Parsed posts:', parsedPosts); // デバッグ用
+                    
+                    // 短期・単発バイトを抽出
+                    allJobs = parsedPosts.filter(job => {
+                        // jobがオブジェクトであることを確認
+                        if (!job || typeof job !== 'object') return false;
+                        
+                        // タイプがjobまたは仕事の投稿であること
+                        const isJobType = (job.type === 'job' || job.type === '仕事の投稿');
+                        
+                        // カテゴリがshort-termまたは短期・単発バイトであること
+                        const isShortTerm = (job.category === 'short-term' || job.category === '短期・単発バイト');
+                        
+                        return isJobType && isShortTerm;
+                    });
+                    
+                    console.log('フィルタリング後の短期・単発バイト:', allJobs.length);
+                }
+                
+                // データがない場合またはフィルタリング結果が0件の場合
+                if (!allJobs || allJobs.length === 0) {
+                    console.log('短期・単発バイトのデータがありません。デモデータを使用します。');
+                    loadDemoData();
+                }
+                
+                populateLocationFilter();
+                displayJobs();
+                
+            } catch (e) {
+                console.error('仕事データの読み込みに失敗しました', e);
+                // エラー時もデモデータを表示
+                loadDemoData();
+                populateLocationFilter();
+                displayJobs();
+            }
+        }
+
+        // ===== デモデータの読み込み =====
+        function loadDemoData() {
+            allJobs = [
+                { 
+                    id: 1, 
+                    type: 'job', 
+                    category: 'short-term', 
+                    title: 'レストランでのキッチンスタッフ募集', 
+                    description: '週2日から働けるキッチンスタッフを募集しています。日本語が話せなくても大丈夫です。', 
+                    location: '東京都新宿区', 
+                    date: '2023-12-15', 
+                    salary: '時給1,000円', 
+                    workingHours: '10:00-15:00', 
+                    requirements: '健康診断書が必要', 
+                    benefits: '交通費支給' 
+                },
+                { 
+                    id: 2, 
+                    type: 'job', 
+                    category: 'short-term', 
+                    title: 'イベントスタッフ 1日のみ', 
+                    description: '今週末のイベントスタッフを募集します。1日のみの仕事です。', 
+                    location: '大阪府大阪市', 
+                    date: '2023-12-18', 
+                    salary: '日給8,000円', 
+                    workingHours: '9:00-18:00', 
+                    requirements: '特になし', 
+                    benefits: '昼食付き' 
+                },
+                { 
+                    id: 3, 
+                    type: 'job', 
+                    category: 'short-term', 
+                    title: 'コンビニスタッフ募集', 
+                    description: '深夜時間帯のスタッフを募集しています。週3日からOK。', 
+                    location: '東京都渋谷区', 
+                    date: '2024-01-10', 
+                    salary: '時給1,200円', 
+                    workingHours: '22:00-5:00', 
+                    requirements: '学生歓迎', 
+                    benefits: '深夜手当あり' 
+                }
+            ];
+        }
+
+        // ===== 場所フィルターの選択肢を動的に生成 =====
+        function populateLocationFilter() {
+            if (!locationFilter) return;
+            
+            const locations = [...new Set(allJobs.map(job => job.location).filter(loc => loc))];
+            locationFilter.innerHTML = '<option value="all">すべての場所</option>';
+            locations.forEach(loc => {
+                const option = document.createElement('option');
+                option.value = loc;
+                option.textContent = loc;
+                locationFilter.appendChild(option);
+            });
+        }
+
+        // ===== 仕事一覧を表示（フィルター適用） =====
+        function displayJobs() {
+            if (!jobListEl || !locationFilter) return;
+            
+            const location = locationFilter.value;
+
+            const filtered = allJobs.filter(job => {
+                const locationMatch = location === 'all' || job.location === location;
+                return locationMatch;
+            });
+
+            if (filtered.length === 0) {
+                jobListEl.innerHTML = '<p style="text-align: center; padding: 3rem; background: white; border-radius: 12px;">該当する短期・単発バイトが見つかりませんでした。</p>';
+                return;
+            }
+
+            jobListEl.innerHTML = filtered.map(job => {
+                return `
+                <div class="job-card" data-job-id="${job.id}">
+                    <div class="job-header">
+                        <h2 class="job-title">${escapeHTML(job.title)}</h2>
+                        <span class="job-badge"><i class="fas fa-tag"></i> 短期・単発バイト</span>
+                    </div>
+                    <div class="job-meta">
+                        <span><i class="fas fa-map-marker-alt"></i> ${escapeHTML(job.location || '場所未定')}</span>
+                        <span><i class="fas fa-calendar-alt"></i> 掲載日: ${job.date || '不明'}</span>
+                    </div>
+                    <p class="job-description">${escapeHTML(job.description || '説明なし')}</p>
+                    <div class="job-details-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">給与</span>
+                            <span class="detail-value">${escapeHTML(job.salary || '未記載')}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">勤務時間</span>
+                            <span class="detail-value">${escapeHTML(job.workingHours || '未記載')}</span>
+                        </div>
+                        ${job.requirements ? `
+                        <div class="detail-item">
+                            <span class="detail-label">必要条件</span>
+                            <span class="detail-value">${escapeHTML(job.requirements)}</span>
+                        </div>
+                        ` : ''}
+                        ${job.benefits ? `
+                        <div class="detail-item">
+                            <span class="detail-label">福利厚生</span>
+                            <span class="detail-value">${escapeHTML(job.benefits)}</span>
+                        </div>
+                        ` : ''}
+                    </div>
+                    <button class="apply-btn" onclick="openApplicationModal(${job.id})">
+                        <i class="fas fa-paper-plane"></i> この仕事に応募する
+                    </button>
+                </div>
+                `;
+            }).join('');
+        }
+
+        // ===== HTMLエスケープ =====
+        function escapeHTML(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        // ===== 国籍選択の表示制御 =====
+        if (nationalityJapanese) {
+            nationalityJapanese.addEventListener('change', function() {
+                if (this.checked) {
+                    if (foreignCountrySelect) foreignCountrySelect.style.display = 'none';
+                    if (residenceStatusSection) residenceStatusSection.style.display = 'none';
+                    if (countrySelect) countrySelect.value = '';
+                }
+            });
+        }
+
+        if (nationalityForeign) {
+            nationalityForeign.addEventListener('change', function() {
+                if (this.checked) {
+                    if (foreignCountrySelect) foreignCountrySelect.style.display = 'block';
+                    if (residenceStatusSection) residenceStatusSection.style.display = 'block';
+                }
+            });
+        }
+
+        // ===== モーダルを開く =====
+        window.openApplicationModal = function(jobId) {
+            currentJob = allJobs.find(j => j.id === jobId);
+            if (!currentJob) return;
+
+            if (modalJobTitle) {
+                modalJobTitle.textContent = `応募フォーム - ${currentJob.title}`;
+            }
+            
+            // フォームをリセット
+            selectedResumeOption = null;
+            
+            // ファイル配列をリセット
+            uploadedResumeFiles = [];
+            workHistoryFiles = [];
+            portfolioFiles = [];
+            recommendationFiles = [];
+            diplomaFiles = [];
+            transcriptFiles = [];
+            photoFile = null;
+            
+            if (uploadResumeOption) uploadResumeOption.classList.remove('selected');
+            if (createResumeOption) createResumeOption.classList.remove('selected');
+            if (uploadResumeArea) uploadResumeArea.style.display = 'none';
+            if (createResumeArea) createResumeArea.style.display = 'none';
+            
+            // ファイルリストをクリア
+            const fileLists = ['uploadedResumeFileList', 'workHistoryFileList', 'portfolioFileList', 'recommendationFileList', 'diplomaFileList', 'transcriptFileList', 'photoFileList'];
+            fileLists.forEach(id => {
+                const list = document.getElementById(id);
+                if (list) list.innerHTML = '';
+            });
+            
+            // 写真プレビューをリセット
+            const photoPreview = document.getElementById('photoPreview');
+            if (photoPreview) photoPreview.innerHTML = '<i class="fas fa-camera"></i>';
+            
+            // 入力フィールドをクリア
+            const inputIds = ['fullname', 'furigana', 'birthdate', 'postal1', 'postal2', 'address', 'phone', 'email', 'message'];
+            inputIds.forEach(id => {
+                const input = document.getElementById(id);
+                if (input) input.value = '';
+            });
+            
+            document.querySelectorAll('input[name="gender"]').forEach(r => r.checked = false);
+            
+            if (nationalityJapanese) nationalityJapanese.checked = true;
+            if (foreignCountrySelect) foreignCountrySelect.style.display = 'none';
+            if (residenceStatusSection) residenceStatusSection.style.display = 'none';
+            if (countrySelect) countrySelect.value = '';
+            
+            const residenceInputs = ['residenceCard', 'residenceType', 'residenceExpiry'];
+            residenceInputs.forEach(id => {
+                const input = document.getElementById(id);
+                if (input) input.value = '';
+            });
+            
+            // 履歴書作成フォームをクリア
+            const resumeInputIds = ['resume_fullname', 'resume_furigana', 'resume_birthdate', 'resume_postal1', 'resume_postal2', 'resume_address', 'resume_phone', 'resume_email', 'resume_motivation', 'resume_selfPr', 'resume_desiredJob', 'resume_desiredLocation', 'resume_desiredSalary', 'resume_availableDate', 'resume_residenceCard', 'resume_residenceType', 'resume_residenceExpiry'];
+            resumeInputIds.forEach(id => {
+                const input = document.getElementById(id);
+                if (input) input.value = '';
+            });
+            
+            const resumeGender = document.getElementById('resume_gender');
+            if (resumeGender) resumeGender.value = '';
+            
+            // エラー状態をリセット
+            document.querySelectorAll('.form-group').forEach(g => g.classList.remove('error'));
+
+            // ステップ1を表示
+            currentStep = 1;
+            updateStepDisplay();
+            
+            if (modal) modal.style.display = 'block';
+        };
+
+        // ===== ステップ表示を更新 =====
+        function updateStepDisplay() {
+            if (step1Indicator) {
+                step1Indicator.className = 'step' + (currentStep >= 1 ? ' active' : '') + (currentStep > 1 ? ' completed' : '');
+            }
+            if (step2Indicator) {
+                step2Indicator.className = 'step' + (currentStep >= 2 ? ' active' : '') + (currentStep > 2 ? ' completed' : '');
+            }
+            if (step3Indicator) {
+                step3Indicator.className = 'step' + (currentStep >= 3 ? ' active' : '') + (currentStep > 3 ? ' completed' : '');
+            }
+            if (step4Indicator) {
+                step4Indicator.className = 'step' + (currentStep >= 4 ? ' active' : '');
+            }
+
+            if (step1) step1.style.display = currentStep === 1 ? 'block' : 'none';
+            if (step2) step2.style.display = currentStep === 2 ? 'block' : 'none';
+            if (step3) step3.style.display = currentStep === 3 ? 'block' : 'none';
+            if (step4) step4.style.display = currentStep === 4 ? 'block' : 'none';
+
+            if (prevBtn) prevBtn.style.display = currentStep > 1 ? 'inline-block' : 'none';
+            
+            if (nextBtn) {
+                if (currentStep === 1) {
+                    nextBtn.disabled = !selectedResumeOption;
+                    nextBtn.style.display = 'inline-block';
+                } else if (currentStep === 2) {
+                    nextBtn.disabled = false;
+                    nextBtn.style.display = 'inline-block';
+                } else if (currentStep === 3) {
+                    nextBtn.disabled = false;
+                    nextBtn.style.display = 'inline-block';
+                } else if (currentStep === 4) {
+                    nextBtn.style.display = 'none';
+                }
+            }
+            
+            if (submitBtn) {
+                submitBtn.style.display = currentStep === 4 ? 'inline-block' : 'none';
+            }
+
+            if (currentStep === 4) {
+                updateConfirmScreen();
+            }
+        }
+
+        // ===== 確認画面の内容を更新 =====
+        function updateConfirmScreen() {
+            const fullname = document.getElementById('fullname');
+            document.getElementById('confirmName').textContent = fullname ? (fullname.value || '未入力') : '未入力';
+            
+            const furigana = document.getElementById('furigana');
+            document.getElementById('confirmFurigana').textContent = furigana ? (furigana.value || '未入力') : '未入力';
+            
+            const birthdate = document.getElementById('birthdate');
+            if (birthdate && birthdate.value) {
+                document.getElementById('confirmBirthdate').textContent = new Date(birthdate.value).toLocaleDateString('ja-JP');
+            } else {
+                document.getElementById('confirmBirthdate').textContent = '未入力';
+            }
+            
+            const gender = document.querySelector('input[name="gender"]:checked');
+            const genderText = gender ? 
+                (gender.value === 'male' ? '男性' : 
+                 gender.value === 'female' ? '女性' : 
+                 gender.value === 'other' ? 'その他' : '回答しない') : '未選択';
+            document.getElementById('confirmGender').textContent = genderText;
+            
+            const postal1 = document.getElementById('postal1');
+            const postal2 = document.getElementById('postal2');
+            const postal1Value = postal1 ? postal1.value : '';
+            const postal2Value = postal2 ? postal2.value : '';
+            document.getElementById('confirmPostal').textContent = (postal1Value && postal2Value) ? `${postal1Value}-${postal2Value}` : '未入力';
+            
+            const address = document.getElementById('address');
+            document.getElementById('confirmAddress').textContent = address ? (address.value || '未入力') : '未入力';
+            
+            const phone = document.getElementById('phone');
+            document.getElementById('confirmPhone').textContent = phone ? (phone.value || '未入力') : '未入力';
+            
+            const email = document.getElementById('email');
+            document.getElementById('confirmEmail').textContent = email ? (email.value || '未入力') : '未入力';
+            
+            let nationalityText = '日本';
+            if (nationalityForeign && nationalityForeign.checked && countrySelect) {
+                nationalityText = countrySelect.value || '未選択';
+            }
+            document.getElementById('confirmNationality').textContent = nationalityText;
+            
+            let residenceText = '不要（日本国籍）';
+            if (nationalityForeign && nationalityForeign.checked) {
+                const card = document.getElementById('residenceCard');
+                const type = document.getElementById('residenceType');
+                const expiry = document.getElementById('residenceExpiry');
+                const cardValue = card ? card.value : '';
+                const typeValue = type ? type.value : '';
+                const expiryValue = expiry ? expiry.value : '';
+                residenceText = `在留カード: ${cardValue || '未入力'}, 資格: ${typeValue || '未入力'}, 期限: ${expiryValue || '未入力'}`;
+            }
+            document.getElementById('confirmResidenceStatus').textContent = residenceText;
+            
+            let resumeText = '';
+            if (selectedResumeOption === 'upload') {
+                resumeText = uploadedResumeFiles.length > 0 ? uploadedResumeFiles.map(f => f.name).join(', ') : 'ファイル未選択';
+            } else if (selectedResumeOption === 'create') {
+                resumeText = 'フォーム入力済み（PDFダウンロード可）';
+            } else {
+                resumeText = '未選択';
+            }
+            document.getElementById('confirmResume').textContent = resumeText;
+            
+            document.getElementById('confirmWorkHistory').textContent = workHistoryFiles.length > 0 ? workHistoryFiles.map(f => f.name).join(', ') : 'ファイル未選択';
+            document.getElementById('confirmPortfolio').textContent = portfolioFiles.length > 0 ? portfolioFiles.map(f => f.name).join(', ') : 'ファイル未選択';
+            document.getElementById('confirmRecommendation').textContent = recommendationFiles.length > 0 ? recommendationFiles.map(f => f.name).join(', ') : 'ファイル未選択';
+            document.getElementById('confirmDiploma').textContent = diplomaFiles.length > 0 ? diplomaFiles.map(f => f.name).join(', ') : 'ファイル未選択';
+            document.getElementById('confirmTranscript').textContent = transcriptFiles.length > 0 ? transcriptFiles.map(f => f.name).join(', ') : 'ファイル未選択';
+            
+            const message = document.getElementById('message');
+            document.getElementById('confirmMessage').textContent = message ? (message.value || '（なし）') : '（なし）';
+            
+            document.getElementById('confirmJobTitle').textContent = currentJob ? currentJob.title : '';
+        }
+
+        // ===== ステップ2のバリデーション =====
+        function validateStep2() {
+            let isValid = true;
+            
+            const fullname = document.getElementById('fullname');
+            if (!fullname || !fullname.value.trim()) {
+                const group = document.getElementById('group-fullname');
+                if (group) group.classList.add('error');
+                isValid = false;
+            } else {
+                const group = document.getElementById('group-fullname');
+                if (group) group.classList.remove('error');
+            }
+
+            const furigana = document.getElementById('furigana');
+            if (!furigana || !furigana.value.trim()) {
+                const group = document.getElementById('group-furigana');
+                if (group) group.classList.add('error');
+                isValid = false;
+            } else {
+                const group = document.getElementById('group-furigana');
+                if (group) group.classList.remove('error');
+            }
+
+            const birthdate = document.getElementById('birthdate');
+            if (!birthdate || !birthdate.value) {
+                const group = document.getElementById('group-birthdate');
+                if (group) group.classList.add('error');
+                isValid = false;
+            } else {
+                const group = document.getElementById('group-birthdate');
+                if (group) group.classList.remove('error');
+            }
+
+            const postal1 = document.getElementById('postal1');
+            const postal2 = document.getElementById('postal2');
+            if (!postal1 || !postal1.value || !postal2 || !postal2.value) {
+                const group = document.getElementById('group-postal');
+                if (group) group.classList.add('error');
+                isValid = false;
+            } else {
+                const group = document.getElementById('group-postal');
+                if (group) group.classList.remove('error');
+            }
+
+            const address = document.getElementById('address');
+            if (!address || !address.value.trim()) {
+                const group = document.getElementById('group-address');
+                if (group) group.classList.add('error');
+                isValid = false;
+            } else {
+                const group = document.getElementById('group-address');
+                if (group) group.classList.remove('error');
+            }
+
+            const phone = document.getElementById('phone');
+            if (!phone || !phone.value.trim()) {
+                const group = document.getElementById('group-phone');
+                if (group) group.classList.add('error');
+                isValid = false;
+            } else {
+                const group = document.getElementById('group-phone');
+                if (group) group.classList.remove('error');
+            }
+
+            const email = document.getElementById('email');
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!email || !email.value.trim() || !emailRegex.test(email.value)) {
+                const group = document.getElementById('group-email');
+                if (group) group.classList.add('error');
+                isValid = false;
+            } else {
+                const group = document.getElementById('group-email');
+                if (group) group.classList.remove('error');
+            }
+
+            if (nationalityForeign && nationalityForeign.checked && countrySelect && !countrySelect.value) {
+                const group = document.getElementById('group-nationality');
+                if (group) group.classList.add('error');
+                isValid = false;
+            } else {
+                const group = document.getElementById('group-nationality');
+                if (group) group.classList.remove('error');
+            }
+
+            return isValid;
+        }
+
+        // ===== 学歴追加 =====
+        document.getElementById('addEducation').addEventListener('click', function() {
+            const educationList = document.getElementById('educationList');
+            if (!educationList) return;
+            
+            const newItem = document.createElement('div');
+            newItem.className = 'education-item';
+            newItem.innerHTML = `
+                <div class="form-group">
+                    <input type="text" placeholder="学校名（例: ○○高等学校）">
+                </div>
+                <div class="form-group">
+                    <input type="text" placeholder="学部 / 学科（例: 普通科）">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <input type="text" placeholder="入学年月（例: 2018年4月）">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" placeholder="卒業年月（例: 2021年3月）">
+                    </div>
+                </div>
+                <div class="example-text">例: 2018年4月 ○○高校 入学 / 2021年3月 ○○高校 卒業</div>
+                <button type="button" class="remove-btn" onclick="this.parentElement.remove()">削除</button>
+            `;
+            educationList.appendChild(newItem);
+        });
+
+        // ===== 職歴追加 =====
+        document.getElementById('addExperience').addEventListener('click', function() {
+            const experienceList = document.getElementById('experienceList');
+            if (!experienceList) return;
+            
+            const newItem = document.createElement('div');
+            newItem.className = 'experience-item';
+            newItem.innerHTML = `
+                <div class="form-group">
+                    <input type="text" placeholder="会社名">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <input type="text" placeholder="入社年月（例: 2022年4月）">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" placeholder="退社年月（例: 2024年3月）">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <textarea placeholder="仕事内容（簡単に）" rows="2"></textarea>
+                </div>
+                <div class="example-text">例: 2022年4月 株式会社○○ 入社 / 接客業務担当</div>
+                <button type="button" class="remove-btn" onclick="this.parentElement.remove()">削除</button>
+            `;
+            experienceList.appendChild(newItem);
+        });
+
+        // ===== 資格追加 =====
+        document.getElementById('addQualification').addEventListener('click', function() {
+            const qualificationList = document.getElementById('qualificationList');
+            if (!qualificationList) return;
+            
+            const newItem = document.createElement('div');
+            newItem.className = 'qualification-item';
+            newItem.innerHTML = `
+                <div class="form-row">
+                    <div class="form-group">
+                        <input type="text" placeholder="資格名（例: 日本語能力試験 N2）">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" placeholder="取得年月（例: 2023年12月）">
+                    </div>
+                </div>
+                <div class="example-text">例: 日本語能力試験（JLPT）N2 / 普通自動車免許 / Excel</div>
+                <button type="button" class="remove-btn" onclick="this.parentElement.remove()">削除</button>
+            `;
+            qualificationList.appendChild(newItem);
+        });
+
+        // ===== 次へボタン =====
+        if (nextBtn) {
+            nextBtn.addEventListener('click', function() {
+                if (currentStep === 1) {
+                    if (selectedResumeOption) {
+                        currentStep = 2;
+                        updateStepDisplay();
+                    }
+                } else if (currentStep === 2) {
+                    if (validateStep2()) {
+                        currentStep = 3;
+                        updateStepDisplay();
+                    }
+                } else if (currentStep === 3) {
+                    currentStep = 4;
+                    updateStepDisplay();
+                }
+            });
+        }
+
+        // ===== 戻るボタン =====
+        if (prevBtn) {
+            prevBtn.addEventListener('click', function() {
+                if (currentStep > 1) {
+                    currentStep--;
+                    updateStepDisplay();
+                }
+            });
+        }
+
+        // ===== 応募確定 =====
+        if (submitBtn) {
+            submitBtn.addEventListener('click', function() {
+                if (!currentJob) return;
+
+                const applicationData = {
+                    jobId: currentJob.id,
+                    jobTitle: currentJob.title,
+                    applicantName: document.getElementById('fullname')?.value || '',
+                    furigana: document.getElementById('furigana')?.value || '',
+                    birthdate: document.getElementById('birthdate')?.value || '',
+                    gender: document.querySelector('input[name="gender"]:checked')?.value || '',
+                    postal: `${document.getElementById('postal1')?.value || ''}-${document.getElementById('postal2')?.value || ''}`,
+                    address: document.getElementById('address')?.value || '',
+                    phone: document.getElementById('phone')?.value || '',
+                    email: document.getElementById('email')?.value || '',
+                    nationality: (nationalityForeign && nationalityForeign.checked) ? (countrySelect?.value || '日本') : '日本',
+                    residenceCard: document.getElementById('residenceCard')?.value || '',
+                    residenceType: document.getElementById('residenceType')?.value || '',
+                    residenceExpiry: document.getElementById('residenceExpiry')?.value || '',
+                    message: document.getElementById('message')?.value || '',
+                    resumeOption: selectedResumeOption,
+                    uploadedResumeFiles: uploadedResumeFiles.map(f => f.name),
+                    photoFile: photoFile ? photoFile.name : null,
+                    workHistoryFiles: workHistoryFiles.map(f => f.name),
+                    portfolioFiles: portfolioFiles.map(f => f.name),
+                    recommendationFiles: recommendationFiles.map(f => f.name),
+                    diplomaFiles: diplomaFiles.map(f => f.name),
+                    transcriptFiles: transcriptFiles.map(f => f.name),
+                    appliedAt: new Date().toLocaleString('ja-JP')
+                };
+
+                alert('応募が完了しました\n\n' +
+                      '=== 応募内容 ===\n' +
+                      `求人: ${applicationData.jobTitle}\n` +
+                      `応募者: ${applicationData.applicantName}\n` +
+                      `メール: ${applicationData.email}\n` +
+                      `電話: ${applicationData.phone}\n\n` +
+                      '※実際のシステムでは、この内容が投稿者と企業のメールアドレスに送信されます。\n' +
+                      '※履歴書PDFおよび添付ファイルは別途送信されます。');
+
+                console.log('応募データ:', applicationData);
+
+                if (modal) modal.style.display = 'none';
+            });
+        }
+
+        // ===== モーダルを閉じる =====
+        if (closeModal) {
+            closeModal.addEventListener('click', function() {
+                if (modal) modal.style.display = 'none';
+            });
+        }
+
+        window.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                if (modal) modal.style.display = 'none';
+            }
+        });
+
+        // フォーム入力時にエラー解除
+        ['fullname', 'furigana', 'birthdate', 'address', 'phone', 'email'].forEach(id => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.addEventListener('input', function() {
+                    const group = document.getElementById(`group-${id}`);
+                    if (group) group.classList.remove('error');
+                });
+            }
+        });
+
+        ['postal1', 'postal2'].forEach(id => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.addEventListener('input', function() {
+                    const group = document.getElementById('group-postal');
+                    if (group) group.classList.remove('error');
+                });
+            }
+        });
+
+        if (countrySelect) {
+            countrySelect.addEventListener('change', function() {
+                const group = document.getElementById('group-nationality');
+                if (group) group.classList.remove('error');
+            });
+        }
+
+        // フィルター変更時
+        if (locationFilter) {
+            locationFilter.addEventListener('change', displayJobs);
+        }
+
+        // クリアボタン
+        if (clearFiltersBtn) {
+            clearFiltersBtn.addEventListener('click', function() {
+                if (locationFilter) locationFilter.value = 'all';
+                displayJobs();
+            });
+        }
+
+        // ===== 初期化実行 =====
+        document.addEventListener('DOMContentLoaded', function() {
+            loadJobs();
+            setupAllFileUploads();
+        });
+    </script>
+</body>
+</html>

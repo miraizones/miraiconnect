@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>語学サポート - ミライコネクト</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* スタイルは元のまま */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f7fa;
+            min-height: 100vh;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+        
+        /* ヘッダー */
+        .language-header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #f39c12;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+        
+        .back-button {
+            display: inline-block;
+            margin: 1rem 0;
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1.5rem;
+            border: 2px solid white;
+            border-radius: 25px;
+            transition: all 0.3s;
+            background: transparent;
+        }
+        
+        .back-button:hover {
+            background-color: white;
+            color: #3498db;
+        }
+        
+        /* メインコンテンツ */
+        .main-title {
+            text-align: center;
+            margin-bottom: 1rem;
+            color: white;
+            font-size: 2.2rem;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+        
+        /* 翻訳ツール */
+        .translation-section {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            padding: 2.5rem;
+            margin-bottom: 3rem;
+        }
+        
+        .section-title {
+            color: #2c3e50;
+            margin-bottom: 2rem;
+            text-align: center;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+        }
+        
+        .translation-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .language-selectors {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .select-wrapper {
+            display: flex;
+            flex-direction: column;
+            min-width: 200px;
+        }
+        
+        .select-wrapper label {
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .language-select {
+            padding: 0.8rem 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            background-color: white;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+        
+        .language-select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        .swap-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .swap-btn:hover {
+            background-color: #2980b9;
+            transform: rotate(180deg);
+        }
+        
+        .text-areas {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .text-box {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .text-box label {
+            margin-bottom: 0.8rem;
+            font-weight: 600;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        textarea {
+            padding: 1.2rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            resize: vertical;
+            min-height: 150px;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        textarea[readonly] {
+            background-color: #f8f9fa;
+        }
+        
+        /* リソースセクション */
+        .resources-section {
+            margin-bottom: 3rem;
+        }
+        
+        .resources-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 1.5rem;
+        }
+        
+        .resource-card {
+            background-color: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s;
+            height: 100%;
+        }
+        
+        .resource-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-header {
+            background-color: #3498db;
+            color: white;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .card-header i {
+            font-size: 1.8rem;
+        }
+        
+        .card-content {
+            padding: 1.5rem;
+        }
+        
+        .card-content h3 {
+            margin-bottom: 1rem;
+            color: #2c3e50;
+        }
+        
+        .card-content p {
+            color: #666;
+            margin-bottom: 1.5rem;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+        
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn-secondary {
+            background-color: #2ecc71;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #27ae60;
+        }
+        
+        /* マッチングフォーム */
+        .matching-form {
+            background-color: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-top: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        /* 投稿表示セクション */
+        .posts-section {
+            margin-bottom: 3rem;
+        }
+        
+        .posts-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .filter-controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .filter-select {
+            padding: 0.5rem 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+        
+        .posts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .post-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            border-left: 4px solid #3498db;
+        }
+        
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+        
+        .post-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+        
+        .post-meta {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            margin-bottom: 1rem;
+        }
+        
+        .post-content {
+            color: #666;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+        
+        .post-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .tag {
+            background-color: #e0f7fa;
+            color: #00796b;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+        
+        .post-actions {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .action-btn {
+            padding: 0.4rem 0.8rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            background-color: #f0f0f0;
+            color: #333;
+            transition: background-color 0.3s;
+        }
+        
+        .action-btn:hover {
+            background-color: #e0e0e0;
+        }
+        
+        /* フッター */
+        .language-footer {
+            background-color: #2c3e50;
+            color: white;
+            padding: 2rem 0;
+            margin-top: 3rem;
+            text-align: center;
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+        
+        /* 言語バー */
+        .language-bar {
+            background-color: #f8f9fa;
+            padding: 0.8rem;
+            text-align: right;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .lang-btn {
+            padding: 0.3rem 0.8rem;
+            margin-left: 0.5rem;
+            border: 1px solid #ddd;
+            background: white;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+        
+        .lang-btn.active {
+            background: #4CAF50;
+            color: white;
+            border-color: #4CAF50;
+        }
+        
+        #translation-result {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: #e8f5e8;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        #translation-message {
+            font-weight: bold;
+            color: #27ae60;
+        }
+        
+        /* レスポンシブデザイン */
+        @media (max-width: 768px) {
+            .text-areas {
+                grid-template-columns: 1fr;
+            }
+            
+            .language-selectors {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .swap-btn {
+                align-self: center;
+                margin: 0.5rem 0;
+            }
+            
+            .resources-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .posts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .posts-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 言語選択バー -->
+    <div class="language-bar">
+        <button class="lang-btn active" data-lang="ja">日本語</button>
+        <button class="lang-btn" data-lang="en">English</button>
+        <button class="lang-btn" data-lang="ne">नेपाली</button>
+    </div>
+    
+    <!-- ヘッダー -->
+    <header class="language-header">
+        <div class="header-content">
+            <a href="index.html" class="logo">ミライコネクト</a>
+            <h1 class="main-title" data-translate="language_support">語学サポート</h1>
+            <p class="subtitle">言語学習とコミュニケーションのための総合サポート</p>
+            <a href="index.html" class="back-button">&larr; <span data-translate="home">ホーム</span>に戻る</a>
+        </div>
+    </header>
+    
+    <div class="container">
+        <!-- 翻訳セクション -->
+        <section class="translation-section">
+            <h2 class="section-title">
+                <i class="fas fa-language"></i>
+                <span data-translate="translation_tool">翻訳ツール</span>
+            </h2>
+            
+            <div class="translation-container">
+                <div class="language-selectors">
+                    <div class="select-wrapper">
+                        <label for="from-language"><i class="fas fa-arrow-right"></i> 翻訳元</label>
+                        <select id="from-language" class="language-select">
+                            <option value="ja">日本語</option>
+                            <option value="en">English</option>
+                            <option value="ne">नेपाली (ネパール語)</option>
+                            <option value="ko">한국어 (韓国語)</option>
+                            <option value="zh">中文 (中国語)</option>
+                            <option value="vi">Tiếng Việt (ベトナム語)</option>
+                            <option value="th">ภาษาไทย (タイ語)</option>
+                            <option value="my">မြန်မာစာ (ミャンマー語)</option>
+                            <option value="id">Bahasa Indonesia (インドネシア語)</option>
+                        </select>
+                    </div>
+                    
+                    <button class="swap-btn" id="swap-languages" title="翻訳方向を切り替え">
+                        <i class="fas fa-exchange-alt"></i>
+                    </button>
+                    
+                    <div class="select-wrapper">
+                        <label for="to-language"><i class="fas fa-arrow-left"></i> 翻訳先</label>
+                        <select id="to-language" class="language-select">
+                            <option value="en">English</option>
+                            <option value="ja">日本語</option>
+                            <option value="ne">नेपाली (ネパール語)</option>
+                            <option value="ko">한국어 (韓国語)</option>
+                            <option value="zh">中文 (中国語)</option>
+                            <option value="vi">Tiếng Việt (ベトナム語)</option>
+                            <option value="th">ภาษาไทย (タイ語)</option>
+                            <option value="my">မြန်မာစာ (ミャンマー語)</option>
+                            <option value="id">Bahasa Indonesia (インドネシア語)</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="text-areas">
+                    <div class="text-box">
+                        <label for="source-text">
+                            <i class="fas fa-keyboard"></i>
+                            <span id="source-label">入力テキスト</span>
+                        </label>
+                        <textarea id="source-text" placeholder="ここに翻訳したいテキストを入力してください"></textarea>
+                    </div>
+                    
+                    <div class="text-box">
+                        <label for="translated-text">
+                            <i class="fas fa-file-alt"></i>
+                            <span id="target-label">翻訳結果</span>
+                        </label>
+                        <textarea id="translated-text" placeholder="翻訳結果がここに表示されます" readonly></textarea>
+                    </div>
+                </div>
+                
+                <!-- 翻訳ボタン -->
+                <div style="text-align: center; margin: 1rem 0;">
+                    <button class="btn btn-primary" onclick="translateText()" style="padding: 0.8rem 2rem;">
+                        <i class="fas fa-language"></i> 翻訳する
+                    </button>
+                    <button class="btn btn-secondary" onclick="swapLanguages()" style="margin-left: 1rem;">
+                        <i class="fas fa-exchange-alt"></i> 言語を入れ替え
+                    </button>
+                </div>
+                
+                <!-- 翻訳結果表示エリア -->
+                <div id="translation-result" style="display: none;">
+                    <p id="translation-message"></p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- リソースセクション -->
+        <section class="resources-section">
+            <h2 class="section-title">
+                <i class="fas fa-book"></i>
+                <span>語学学習リソース</span>
+            </h2>
+            
+            <div class="resources-grid">
+                <!-- 語学学習リソース -->
+                <div class="resource-card">
+                    <div class="card-header">
+                        <i class="fas fa-graduation-cap"></i>
+                        <h3>語学学習リソース</h3>
+                    </div>
+                    <div class="card-content">
+                        <p>日本語学習のための教材、アプリ、オンラインリソースをご紹介します。初心者から上級者まで対応。</p>
+                        <div class="action-buttons">
+                            <a href="#" class="btn btn-primary">リソース一覧を見る</a>
+                            <a href="#" class="btn btn-secondary">学習プラン作成</a>
+                        </div>
+                        
+                        <!-- 学習リソースリスト -->
+                        <div class="resource-list" style="margin-top: 1.5rem;">
+                            <h4 style="margin-bottom: 0.8rem; color: #2c3e50;">おすすめリソース</h4>
+                            <ul style="list-style-type: none; padding-left: 0;">
+                                <li style="padding: 0.5rem 0; border-bottom: 1px solid #eee;">
+                                    <i class="fas fa-check-circle" style="color: #2ecc71; margin-right: 0.5rem;"></i>
+                                    NHK日本語講座
+                                </li>
+                                <li style="padding: 0.5rem 0; border-bottom: 1px solid #eee;">
+                                    <i class="fas fa-check-circle" style="color: #2ecc71; margin-right: 0.5rem;"></i>
+                                    日本語能力試験対策サイト
+                                </li>
+                                <li style="padding: 0.5rem 0; border-bottom: 1px solid #eee;">
+                                    <i class="fas fa-check-circle" style="color: #2ecc71; margin-right: 0.5rem;"></i>
+                                    無料学習アプリ「日本語トレーニング」
+                                </li>
+                                <li style="padding: 0.5rem 0;">
+                                    <i class="fas fa-check-circle" style="color: #2ecc71; margin-right: 0.5rem;"></i>
+                                    オンライン辞書と文法ガイド
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- オンライン講座 -->
+                <div class="resource-card">
+                    <div class="card-header" style="background-color: #2ecc71;">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                        <h3>オンライン講座</h3>
+                    </div>
+                    <div class="card-content">
+                        <p>専門の日本語教師によるオンラインレッスン。マンツーマン指導からグループレッスンまで。</p>
+                        <div class="action-buttons">
+                            <button class="btn btn-primary" id="view-courses">講座一覧</button>
+                            <button class="btn btn-secondary" id="register-course">講座登録申請</button>
+                        </div>
+                        
+                        <!-- 講座情報（管理者設定用） -->
+                        <div class="course-info" style="margin-top: 1.5rem; padding: 1rem; background-color: #f8f9fa; border-radius: 8px;">
+                            <h4 style="margin-bottom: 0.8rem; color: #2c3e50;">管理者メモ</h4>
+                            <p style="color: #666; font-size: 0.9rem;">
+                                オンライン講座の口座情報は管理画面から設定してください。<br>
+                                設定内容は自動的にここに反映されます。
+                            </p>
+                            <button class="btn btn-primary" style="margin-top: 0.8rem; padding: 0.4rem 0.8rem; font-size: 0.9rem;" onclick="openAdminPanel()">
+                                管理者設定を開く
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 言語交換パートナー -->
+                <div class="resource-card">
+                    <div class="card-header" style="background-color: #9b59b6;">
+                        <i class="fas fa-users"></i>
+                        <h3>言語交換パートナー</h3>
+                    </div>
+                    <div class="card-content">
+                        <p>一緒に言語を学びたいパートナーを見つけましょう。お互いの母国語を教えあうマッチングシステム。</p>
+                        
+                        <!-- マッチングフォーム -->
+                        <div class="matching-form">
+                            <h4 style="margin-bottom: 1rem; color: #2c3e50;">パートナーを探す</h4>
+                            
+                            <div class="form-group">
+                                <label for="learn-language">学びたい言語</label>
+                                <select id="learn-language" class="form-control">
+                                    <option value="ja">日本語</option>
+                                    <option value="en">英語</option>
+                                    <option value="ne">ネパール語</option>
+                                    <option value="ko">韓国語</option>
+                                    <option value="zh">中国語</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="teach-language">教えられる言語</label>
+                                <select id="teach-language" class="form-control">
+                                    <option value="en">英語</option>
+                                    <option value="ne">ネパール語</option>
+                                    <option value="ja">日本語</option>
+                                    <option value="ko">韓国語</option>
+                                    <option value="zh">中国語</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="meeting-preference">希望する学習方法</label>
+                                <select id="meeting-preference" class="form-control">
+                                    <option value="online">オンライン</option>
+                                    <option value="offline">対面</option>
+                                    <option value="both">どちらでも</option>
+                                </select>
+                            </div>
+                            
+                            <button class="btn btn-secondary" style="width: 100%;" onclick="findLanguagePartner()">
+                                <i class="fas fa-search"></i> パートナーを検索
+                            </button>
+                        </div>
+                        
+                        <!-- マッチング結果表示エリア -->
+                        <div id="matching-results" style="margin-top: 1.5rem; display: none;">
+                            <h4 style="margin-bottom: 0.8rem; color: #2c3e50;">おすすめパートナー</h4>
+                            <div id="partner-list"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 語学サポート投稿表示 -->
+        <section class="posts-section">
+            <div class="posts-header">
+                <h2 class="section-title" style="margin-bottom: 0;">
+                    <i class="fas fa-comments"></i>
+                    <span>語学サポート投稿</span>
+                </h2>
+                
+                <div class="filter-controls">
+                    <select id="post-filter" class="filter-select">
+                        <option value="all">すべての投稿</option>
+                        <option value="question">質問</option>
+                        <option value="offer">提供</option>
+                        <option value="discussion">ディスカッション</option>
+                        <option value="resource">学習リソース</option>
+                    </select>
+                    
+                    <select id="language-filter" class="filter-select">
+                        <option value="all">すべての言語</option>
+                        <option value="ja">日本語</option>
+                        <option value="en">英語</option>
+                        <option value="ne">ネパール語</option>
+                        <option value="other">その他</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- 投稿一覧 -->
+            <div class="posts-grid" id="posts-container">
+                <!-- 投稿はJavaScriptで動的に生成 -->
+            </div>
+            
+            <div style="text-align: center; margin-top: 2rem;">
+                <button class="btn btn-primary" onclick="loadMorePosts()">
+                    <i class="fas fa-sync-alt"></i> もっと読み込む
+                </button>
+            </div>
+        </section>
+    </div>
+    
+    <!-- フッター -->
+    <footer class="language-footer">
+        <div class="footer-content">
+            <p>© 2023 ミライコネクト - 外国人と日本社会をつなぐプラットフォーム</p>
+            <p><span data-translate="contact">お問い合わせ</span>: support@mirai-connect.jp | 電話: 03-1234-5678</p>
+        </div>
+    </footer>
+    
+    <script>
+        // 翻訳データ
+        const translations = {
+            ja: {
+                home: "ホーム",
+                language_support: "語学サポート",
+                translation_tool: "翻訳ツール",
+                contact: "お問い合わせ"
+            },
+            en: {
+                home: "Home",
+                language_support: "Language Support",
+                translation_tool: "Translation Tool",
+                contact: "Contact"
+            },
+            ne: {
+                home: "गृह",
+                language_support: "भाषा समर्थन",
+                translation_tool: "अनुवाद उपकरण",
+                contact: "सम्पर्क"
+            }
+        };
+
+        // 簡易翻訳機能（サンプル辞書）
+        const sampleTranslations = {
+            ja: {
+                en: {
+                    "こんにちは": "Hello",
+                    "ありがとう": "Thank you",
+                    "お願いします": "Please",
+                    "さようなら": "Goodbye",
+                    "はい": "Yes",
+                    "いいえ": "No"
+                },
+                ne: {
+                    "こんにちは": "नमस्ते",
+                    "ありがとう": "धन्यवाद",
+                    "お願いします": "कृपया",
+                    "さようなら": "अलविदा",
+                    "はい": "हो",
+                    "いいえ": "होइन"
+                }
+            },
+            en: {
+                ja: {
+                    "Hello": "こんにちは",
+                    "Thank you": "ありがとう",
+                    "Please": "お願いします",
+                    "Goodbye": "さようなら",
+                    "Yes": "はい",
+                    "No": "いいえ"
+                }
+            }
+        };
+
+        // 言語切り替え
+        document.querySelectorAll('.lang-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const lang = this.dataset.lang;
+                changeLanguage(lang);
+                
+                document.querySelectorAll('.lang-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                this.classList.add('active');
+            });
+        });
+
+        function changeLanguage(lang) {
+            document.querySelectorAll('[data-translate]').forEach(element => {
+                const key = element.dataset.translate;
+                if (translations[lang] && translations[lang][key]) {
+                    element.textContent = translations[lang][key];
+                }
+            });
+        }
+
+        // 言語選択時のプレースホルダー更新
+        function updatePlaceholders() {
+            const fromLang = document.getElementById('from-language').value;
+            const toLang = document.getElementById('to-language').value;
+            
+            const placeholders = {
+                'ja': 'ここに翻訳したいテキストを入力してください',
+                'en': 'Enter text to translate here',
+                'ne': 'यहाँ अनुवाद गर्न पाठ प्रविष्ट गर्नुहोस्',
+                'ko': '번역할 텍스트를 여기에 입력하세요',
+                'zh': '在此输入要翻译的文本',
+                'vi': 'Nhập văn bản cần dịch ở đây',
+                'th': 'กรอกข้อความที่ต้องการแปลที่นี่',
+                'my': 'ဘာသာပြန်လိုသည့်စာသားကို ဤနေရာတွင်ရေးထည့်ပါ',
+                'id': 'Masukkan teks yang akan diterjemahkan di sini'
+            };
+            
+            const resultPlaceholders = {
+                'ja': '翻訳結果がここに表示されます',
+                'en': 'Translation result will appear here',
+                'ne': 'अनुवाद परिणाम यहाँ देखाइनेछ',
+                'ko': '번역 결과가 여기에 표시됩니다',
+                'zh': '翻译结果将显示在此处',
+                'vi': 'Kết quả dịch sẽ xuất hiện ở đây',
+                'th': 'ผลการแปลจะปรากฏที่นี่',
+                'my': 'ဘာသာပြန်ရလဒ်ကို ဤနေရာတွင် ပြသပါမည်',
+                'id': 'Hasil terjemahan akan muncul di sini'
+            };
+            
+            document.getElementById('source-text').placeholder = placeholders[fromLang] || placeholders['ja'];
+            document.getElementById('translated-text').placeholder = resultPlaceholders[toLang] || resultPlaceholders['en'];
+        }
+
+        // 翻訳処理
+        function translateText() {
+            const sourceText = document.getElementById('source-text').value;
+            const fromLang = document.getElementById('from-language').value;
+            const toLang = document.getElementById('to-language').value;
+            const translatedText = document.getElementById('translated-text');
+            const resultDiv = document.getElementById('translation-result');
+            const message = document.getElementById('translation-message');
+            
+            if (!sourceText.trim()) {
+                alert('翻訳するテキストを入力してください');
+                return;
+            }
+            
+            // 簡易翻訳（実際のアプリではAPIを使用）
+            let translated = sourceText;
+            
+            // サンプル辞書にある単語のみ翻訳（デモ用）
+            if (sampleTranslations[fromLang] && sampleTranslations[fromLang][toLang]) {
+                const dict = sampleTranslations[fromLang][toLang];
+                for (let [key, value] of Object.entries(dict)) {
+                    translated = translated.replace(new RegExp(key, 'g'), value);
+                }
+            }
+            
+            // 翻訳できない場合はそのまま表示
+            if (translated === sourceText) {
+                message.textContent = '※このテキストはサンプル辞書にないため、そのまま表示されています。実際のアプリでは翻訳APIを使用します。';
+                resultDiv.style.display = 'block';
+            } else {
+                resultDiv.style.display = 'none';
+            }
+            
+            translatedText.value = translated;
+        }
+
+        // 言語を入れ替え
+        function swapLanguages() {
+            const fromSelect = document.getElementById('from-language');
+            const toSelect = document.getElementById('to-language');
+            const sourceText = document.getElementById('source-text');
+            const translatedText = document.getElementById('translated-text');
+            
+            // 言語を入れ替え
+            const tempLang = fromSelect.value;
+            fromSelect.value = toSelect.value;
+            toSelect.value = tempLang;
+            
+            // テキストを入れ替え
+            const tempText = sourceText.value;
+            sourceText.value = translatedText.value;
+            translatedText.value = tempText;
+            
+            // プレースホルダーを更新
+            updatePlaceholders();
+        }
+
+        // 管理者パネル（シミュレーション）
+        function openAdminPanel() {
+            alert('管理者設定画面は別途実装が必要です。\nオンライン講座の口座情報設定機能を開発してください。');
+        }
+
+        // 言語交換パートナーマッチング
+        function findLanguagePartner() {
+            const learnLang = document.getElementById('learn-language').value;
+            const teachLang = document.getElementById('teach-language').value;
+            const meetingPref = document.getElementById('meeting-preference').value;
+            
+            // マッチング結果を表示
+            document.getElementById('matching-results').style.display = 'block';
+            const partnerList = document.getElementById('partner-list');
+            
+            // サンプルパートナーデータ
+            const samplePartners = [
+                {
+                    name: "山田 太郎",
+                    learning: "英語",
+                    teaching: "日本語",
+                    method: "オンライン",
+                    level: "中級",
+                    interests: "文化交換、ビジネス日本語"
+                },
+                {
+                    name: "鈴木 花子",
+                    learning: "ネパール語",
+                    teaching: "日本語",
+                    method: "対面（東京）",
+                    level: "初心者",
+                    interests: "日常会話、料理"
+                },
+                {
+                    name: "Raj Kumar",
+                    learning: "日本語",
+                    teaching: "英語、ネパール語",
+                    method: "オンライン",
+                    level: "上級",
+                    interests: "テクノロジー、スポーツ"
+                },
+                {
+                    name: "陳 明",
+                    learning: "日本語",
+                    teaching: "中国語",
+                    method: "どちらでも",
+                    level: "中級",
+                    interests: "ビジネス、旅行"
+                }
+            ];
+            
+            // フィルタリング（簡易版）
+            const filteredPartners = samplePartners.filter(partner => {
+                const learnLangName = getLanguageName(learnLang);
+                const teachLangName = getLanguageName(teachLang);
+                
+                return (partner.learning === learnLangName || learnLang === 'all') &&
+                       (partner.teaching === teachLangName || teachLang === 'all');
+            });
+            
+            // 結果表示
+            if (filteredPartners.length === 0) {
+                partnerList.innerHTML = `
+                    <div style="padding: 1rem; background-color: #fff3cd; border-radius: 6px; color: #856404;">
+                        <i class="fas fa-info-circle"></i> 条件に合うパートナーが見つかりませんでした。条件を変更してお試しください。
+                    </div>
+                `;
+            } else {
+                let html = '';
+                filteredPartners.forEach(partner => {
+                    html += `
+                        <div style="padding: 1rem; margin-bottom: 1rem; background-color: white; border-radius: 8px; border: 1px solid #e0e0e0;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                                <strong style="color: #2c3e50;">${partner.name}</strong>
+                                <span style="font-size: 0.9rem; color: #3498db;">${partner.method}</span>
+                            </div>
+                            <div style="font-size: 0.9rem; color: #666; margin-bottom: 0.5rem;">
+                                <div><i class="fas fa-book" style="color: #9b59b6; margin-right: 0.5rem;"></i> 学びたい: ${partner.learning} (${partner.level})</div>
+                                <div><i class="fas fa-chalkboard-teacher" style="color: #2ecc71; margin-right: 0.5rem;"></i> 教えられる: ${partner.teaching}</div>
+                            </div>
+                            <div style="font-size: 0.85rem; color: #7f8c8d;">
+                                <i class="fas fa-heart" style="color: #e74c3c; margin-right: 0.5rem;"></i> 興味: ${partner.interests}
+                            </div>
+                            <button class="btn btn-primary" style="margin-top: 0.8rem; padding: 0.3rem 0.8rem; font-size: 0.9rem; width: 100%;" onclick="contactPartner('${partner.name}')">
+                                <i class="fas fa-envelope"></i> 連絡する
+                            </button>
+                        </div>
+                    `;
+                });
+                partnerList.innerHTML = html;
+            }
+        }
+
+        function getLanguageName(code) {
+            const languages = {
+                'ja': '日本語',
+                'en': '英語',
+                'ne': 'ネパール語',
+                'ko': '韓国語',
+                'zh': '中国語'
+            };
+            return languages[code] || code;
+        }
+
+        function contactPartner(partnerName) {
+            alert(`${partnerName}さんに連絡リクエストを送信しました。\nメッセージを送信するには、プロフィールページから連絡してください。`);
+        }
+
+        // 語学サポート投稿の表示
+        const languagePosts = [
+            {
+                id: 1,
+                title: "日本語の勉強方法について相談",
+                content: "日本語を勉強し始めて3ヶ月ですが、会話力がなかなか上がりません。おすすめの勉強法はありますか？",
+                author: "Raj Kumar",
+                language: "ja",
+                type: "question",
+                tags: ["日本語学習", "勉強法", "初心者"],
+                date: "2023-10-15",
+                likes: 12,
+                comments: 5
+            },
+            {
+                id: 2,
+                title: "英語の文法を教えます",
+                content: "ネイティブレベルの英語力を活かして、英語の文法を無料で教えます。初心者から中級者まで対応可能です。",
+                author: "山田 太郎",
+                language: "en",
+                type: "offer",
+                tags: ["英語", "文法", "無料レッスン"],
+                date: "2023-10-14",
+                likes: 8,
+                comments: 3
+            },
+            {
+                id: 3,
+                title: "ネパール語と日本語の交換レッスン募集",
+                content: "ネパール語を学びたい方、日本語を教えます。週1回オンラインで交流しましょう！",
+                author: "Sita Kumari",
+                language: "ne",
+                type: "discussion",
+                tags: ["言語交換", "ネパール語", "オンライン"],
+                date: "2023-10-13",
+                likes: 15,
+                comments: 7
+            },
+            {
+                id: 4,
+                title: "おすすめの日本語学習アプリ",
+                content: "日本語学習に役立つアプリを5つ紹介します。特に漢字学習に強いアプリがおすすめです。",
+                author: "鈴木 花子",
+                language: "ja",
+                type: "resource",
+                tags: ["アプリ", "学習リソース", "漢字"],
+                date: "2023-10-12",
+                likes: 20,
+                comments: 10
+            },
+            {
+                id: 5,
+                title: "JLPT N3対策勉強会",
+                content: "12月のJLPT N3を受験する方、一緒に勉強しませんか？週末にオンライン勉強会を開催します。",
+                author: "陳 明",
+                language: "ja",
+                type: "discussion",
+                tags: ["JLPT", "N3", "勉強会", "オンライン"],
+                date: "2023-10-11",
+                likes: 25,
+                comments: 12
+            }
+        ];
+
+        // 投稿を表示する関数
+        function displayPosts(filterType = 'all', filterLang = 'all') {
+            const container = document.getElementById('posts-container');
+            let html = '';
+            
+            const filteredPosts = languagePosts.filter(post => {
+                const typeMatch = filterType === 'all' || post.type === filterType;
+                const langMatch = filterLang === 'all' || post.language === filterLang;
+                return typeMatch && langMatch;
+            });
+            
+            filteredPosts.forEach(post => {
+                const languageNames = {
+                    'ja': '日本語',
+                    'en': '英語',
+                    'ne': 'ネパール語'
+                };
+                
+                html += `
+                    <div class="post-card">
+                        <div class="post-header">
+                            <div>
+                                <div class="post-title">${post.title}</div>
+                                <div class="post-meta">
+                                    <i class="fas fa-user"></i> ${post.author} | 
+                                    <i class="fas fa-calendar"></i> ${post.date} |
+                                    <i class="fas fa-language"></i> ${languageNames[post.language] || post.language}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="post-content">
+                            ${post.content}
+                        </div>
+                        
+                        <div class="post-tags">
+                            ${post.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                        </div>
+                        
+                        <div class="post-actions">
+                            <button class="action-btn" onclick="likePost(${post.id})">
+                                <i class="fas fa-thumbs-up"></i> いいね ${post.likes}
+                            </button>
+                            <button class="action-btn" onclick="showComments(${post.id})">
+                                <i class="fas fa-comment"></i> コメント ${post.comments}
+                            </button>
+                            <button class="action-btn" onclick="sharePost(${post.id})">
+                                <i class="fas fa-share"></i> 共有
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        // フィルターのイベントリスナー
+        document.getElementById('post-filter').addEventListener('change', function() {
+            const typeFilter = this.value;
+            const langFilter = document.getElementById('language-filter').value;
+            displayPosts(typeFilter, langFilter);
+        });
+
+        document.getElementById('language-filter').addEventListener('change', function() {
+            const langFilter = this.value;
+            const typeFilter = document.getElementById('post-filter').value;
+            displayPosts(typeFilter, langFilter);
+        });
+
+        // 投稿関連の関数
+        function likePost(postId) {
+            alert(`投稿 ${postId} にいいねしました！`);
+        }
+
+        function showComments(postId) {
+            alert(`投稿 ${postId} のコメントを表示します。`);
+        }
+
+        function sharePost(postId) {
+            alert(`投稿 ${postId} を共有します。`);
+        }
+
+        function loadMorePosts() {
+            alert('追加の投稿を読み込みます。実装時にはサーバーAPIと連携してください。');
+        }
+
+        // イベントリスナーの設定
+        document.getElementById('from-language').addEventListener('change', updatePlaceholders);
+        document.getElementById('to-language').addEventListener('change', updatePlaceholders);
+        document.getElementById('swap-languages').addEventListener('click', swapLanguages);
+
+        // 初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初期言語設定
+            const userLang = navigator.language || navigator.userLanguage;
+            const defaultLang = userLang.startsWith('ja') ? 'ja' : userLang.startsWith('ne') ? 'ne' : 'en';
+            changeLanguage(defaultLang);
+            
+            // 言語ボタンの設定
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.lang === defaultLang) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            // プレースホルダーの初期設定
+            updatePlaceholders();
+            
+            // 投稿の初期表示
+            displayPosts();
+            
+            // サンプルテキスト
+            document.getElementById('source-text').value = "こんにちは、ミライコネクトの語学サポートへようこそ。";
+            document.getElementById('translated-text').value = document.getElementById('source-text').value;
+        });
+    </script>
+</body>
+</html>
